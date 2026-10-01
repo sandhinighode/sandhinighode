@@ -11,7 +11,18 @@
   "fmt": {
     "lineWidth": 120,
     "exclude": [
-      "**/*.md"
+      "**/*.md",
+      "mobile/"
+    ]
+  },
+  "lint": {
+    "exclude": [
+      "mobile/"
+    ]
+  },
+  "test": {
+    "exclude": [
+      "mobile/"
     ]
   }
 }
