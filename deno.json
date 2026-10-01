@@ -1,0 +1,17 @@
+{
+  "imports": {
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2",
+    "@std/assert": "jsr:@std/assert@1"
+  },
+  "tasks": {
+    "test": "deno test --allow-read tests/",
+    "check": "deno check supabase/functions/ingest-url/index.ts scripts/try-urls.ts",
+    "try-urls": "deno run --allow-net scripts/try-urls.ts"
+  },
+  "fmt": {
+    "lineWidth": 120,
+    "exclude": [
+      "**/*.md"
+    ]
+  }
+}

@@ -146,7 +146,7 @@ design leaves room for them; they are **not** created until their milestone.
 | `push_token` | Where to send notifications |
 | `created_at` | |
 
-**`items`**: one saved thing
+**`saves`** (called `items` in earlier drafts): one saved thing. Built in M2; see `supabase/migrations/`.
 | Field | Meaning |
 |---|---|
 | `id` | Unique ID |
@@ -156,7 +156,7 @@ design leaves room for them; they are **not** created until their milestone.
 | `source` | `instagram`, `youtube`, `pinterest`, `web` or `other` |
 | `content_type` | `video`, `image`, `article`, `post` or `unknown` |
 | `title`, `description`, `author_name` | From the link preview |
-| `thumbnail_path` | Our stored copy of the preview image |
+| `thumbnail_url` | Preview image link. (Copying images into our own storage is a later step, because Instagram image links expire.) |
 | `shared_text` | Any text the source app included when sharing |
 | `note` | Your own note |
 | `status` | `pending`, `ready` or `failed` (enrichment progress) |
@@ -379,6 +379,7 @@ our function, and the cheapest model that gives good results for each task.
 | Date | Decision |
 |---|---|
 | 2026-10-01 | D1–D7 agreed: Expo + Supabase; both platforms, Android-first daily testing; MVP without AI; cloud AI later through one swappable function; private beta audience; free tiers wherever possible. |
+| 2026-10-01 | M2 URL ingestion built ahead of M0/M1 as a backend-only Edge Function (`ingest-url`). The table is named `saves`. One adapter per source (`youtube`, `instagram`, `pinterest`, `web`) sits on top of one shared Save model; platform-specific extras go in `source_metadata`. Thumbnails are stored as remote URLs for now. |
 
 ## 12. Open questions (decide at the relevant milestone)
 
