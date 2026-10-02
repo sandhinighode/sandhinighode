@@ -1,6 +1,6 @@
 # Development Plan: Personal Inspiration Library
 
-_Last updated: 2026-10-01_
+_Last updated: 2026-10-02_
 
 This is the agreed architecture and build plan. It is written for a product/UX designer
 building with Claude Code. Each milestone is small enough to build, test on your own
@@ -248,7 +248,7 @@ when the current one works.
 
 ### MVP (no AI)
 
-**M1 · Foundation: app ↔ database** ✅ _built 2026-10-01 (absorbs the old M0)_
+**M1 · Foundation: app ↔ database** 🟡 _built and tested 2026-10-01; waiting for your on-phone check (absorbs the old M0)_
 - Expo app in `mobile/` (TypeScript, Expo Router, SDK 57). Runs in **Expo Go** on your Android phone
   from a Windows laptop. One screen, "Inspiration Library", lists saves from the database.
 - Supabase connection through `mobile/.env` (project URL + publishable key; see `mobile/.env.example`).
@@ -258,8 +258,9 @@ when the current one works.
   and SQL checks of the database rules (`tests/sql/run.sh`).
 - _Done when:_ the test record "My first saved inspiration" appears in the app on your phone.
   → **Setup and verification steps: `mobile/README.md`.**
-- Not yet done from the old M0: `CLAUDE.md` with project conventions, and an Expo account / development
-  build (needed only for the Share menu).
+- `CLAUDE.md` added with the working rules for every session (read the plan and READMEs first,
+  get approval before coding, test and update this plan afterwards).
+- Not yet done from the old M0: an Expo account / development build (needed only for the Share menu, in M1b).
 
 **M1b · Accounts and capture (Android)**
 - Login by email magic link. **Then remove the temporary M1 sample-row rule** (delete sample rows,
@@ -373,8 +374,8 @@ our function, and the cheapest model that gives good results for each task.
 
 ## 10. Working with Claude Code on this project
 
-- **One milestone or sub-task per session.** Start each session with: "Read DEVELOPMENT_PLAN.md
-  and CLAUDE.md. We're on milestone M_X, task: …".
+- **One milestone or sub-task per session.** Claude Code reads `CLAUDE.md` automatically. It says to
+  read this plan and the relevant README before any coding, and to wait for your approval.
 - **Test on your phone after every change.** If something is off, describe what you see
   (screenshots help) rather than guessing at code.
 - **Keep secrets out of the code.** API keys go in Supabase or EAS secret settings, never in the app.
@@ -392,6 +393,7 @@ our function, and the cheapest model that gives good results for each task.
 | 2026-10-01 | D1–D7 agreed: Expo + Supabase; both platforms, Android-first daily testing; MVP without AI; cloud AI later through one swappable function; private beta audience; free tiers wherever possible. |
 | 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
 | 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
+| 2026-10-02 | Working rule added in `CLAUDE.md`: always read DEVELOPMENT_PLAN.md and the relevant README before coding, propose changes and wait for approval, then test and update this plan. A milestone gets ✅ only after the on-phone check. |
 | 2026-10-01 | M2 URL ingestion built ahead of M0/M1 as a backend-only Edge Function (`ingest-url`). The table is named `saves`. One adapter per source (`youtube`, `instagram`, `pinterest`, `web`) sits on top of one shared Save model; platform-specific extras go in `source_metadata`. Thumbnails are stored as remote URLs for now. |
 
 ## 12. Open questions (decide at the relevant milestone)
