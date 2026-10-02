@@ -1,6 +1,6 @@
 # Development Plan: Personal Inspiration Library
 
-_Last updated: 2026-10-01_
+_Last updated: 2026-10-02_
 
 This is the agreed architecture and build plan. It is written for a product/UX designer
 building with Claude Code. Each milestone is small enough to build, test on your own
@@ -146,17 +146,20 @@ design leaves room for them; they are **not** created until their milestone.
 | `push_token` | Where to send notifications |
 | `created_at` | |
 
-**`items`**: one saved thing
+**`saves`** (called `items` in earlier drafts): one saved thing. Created in `supabase/migrations/`.
+Columns built so far: id, user_id, url, canonical_url, shared_text, source, content_type, title,
+description, thumbnail_url, author_name, author_url, site_name, source_metadata, status,
+processing_error, processed_at, created_at, updated_at. The other columns below arrive with their milestones.
 | Field | Meaning |
 |---|---|
 | `id` | Unique ID |
-| `user_id` | Owner |
+| `user_id` | Owner. **Temporarily optional (M1):** rows with no owner are sample rows the app can read before login exists. |
 | `url` | Exactly what was shared |
 | `canonical_url` | Cleaned-up URL (tracking junk removed), used to catch duplicates |
 | `source` | `instagram`, `youtube`, `pinterest`, `web` or `other` |
 | `content_type` | `video`, `image`, `article`, `post` or `unknown` |
 | `title`, `description`, `author_name` | From the link preview |
-| `thumbnail_path` | Our stored copy of the preview image |
+| `thumbnail_url` | Preview image link. (Copying images into our own storage is a later step, because Instagram image links expire.) |
 | `shared_text` | Any text the source app included when sharing |
 | `note` | Your own note |
 | `status` | `pending`, `ready` or `failed` (enrichment progress) |
@@ -245,19 +248,28 @@ when the current one works.
 
 ### MVP (no AI)
 
-**M0 · Foundations**
-- Create the Supabase project and Expo account. The repo gets a basic Expo app.
-- A "hello world" app runs on your Android phone (development build).
-- Add a `CLAUDE.md` file with project conventions for future Claude Code sessions.
-- _Done when:_ you open the app on your phone and see the starter screen.
+**M1 · Foundation: app ↔ database** 🟡 _built and tested 2026-10-01; waiting for your on-phone check (absorbs the old M0)_
+- Expo app in `mobile/` (TypeScript, Expo Router, SDK 57). Runs in **Expo Go** on your Android phone
+  from a Windows laptop. One screen, "Inspiration Library", lists saves from the database.
+- Supabase connection through `mobile/.env` (project URL + publishable key; see `mobile/.env.example`).
+- `saves` table (migration), one test record (`supabase/seed.sql`), and a **temporary** rule that lets
+  the app read sample rows (no owner) without login. Read-only; real users' rows stay private.
+- Tests: app screen and query tests (`cd mobile && npm test`), type-check, lint, Android bundle build,
+  and SQL checks of the database rules (`tests/sql/run.sh`).
+- _Done when:_ the test record "My first saved inspiration" appears in the app on your phone.
+  → **Setup and verification steps: `mobile/README.md`.**
+- `CLAUDE.md` added with the working rules for every session (read the plan and READMEs first,
+  get approval before coding, test and update this plan afterwards).
+- Not yet done from the old M0: an Expo account / development build (needed only for the Share menu, in M1b).
 
-**M1 · Accounts and capture (Android)**
-- Login by email magic link.
-- The app appears in Android's Share menu. Sharing saves the URL and shared text to your library.
-- A plain library list showing saved URLs, newest first.
+**M1b · Accounts and capture (Android)**
+- Login by email magic link. **Then remove the temporary M1 sample-row rule** (delete sample rows,
+  drop the policy, make `user_id` required again).
+- The app appears in Android's Share menu (needs a development build instead of Expo Go). Sharing saves
+  the URL and shared text to your library through the M2 `ingest-url` function.
 - _Done when:_ you share from Instagram, YouTube, Pinterest and Chrome, and each item appears in the list.
 
-**M2 · Rich previews**
+**M2 · Rich previews** _(backend built early on 2026-10-01: `ingest-url` function + source adapters; not deployed or connected to the app yet)_
 - `enrich-item` function: page metadata, YouTube and Pinterest oEmbed, source and content-type
   detection, stored thumbnails, duplicate detection.
 - Card grid UI, item detail screen and "Open original".
@@ -362,8 +374,8 @@ our function, and the cheapest model that gives good results for each task.
 
 ## 10. Working with Claude Code on this project
 
-- **One milestone or sub-task per session.** Start each session with: "Read DEVELOPMENT_PLAN.md
-  and CLAUDE.md. We're on milestone M_X, task: …".
+- **One milestone or sub-task per session.** Claude Code reads `CLAUDE.md` automatically. It says to
+  read this plan and the relevant README before any coding, and to wait for your approval.
 - **Test on your phone after every change.** If something is off, describe what you see
   (screenshots help) rather than guessing at code.
 - **Keep secrets out of the code.** API keys go in Supabase or EAS secret settings, never in the app.
@@ -379,10 +391,14 @@ our function, and the cheapest model that gives good results for each task.
 | Date | Decision |
 |---|---|
 | 2026-10-01 | D1–D7 agreed: Expo + Supabase; both platforms, Android-first daily testing; MVP without AI; cloud AI later through one swappable function; private beta audience; free tiers wherever possible. |
+| 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
+| 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
+| 2026-10-02 | Working rule added in `CLAUDE.md`: always read DEVELOPMENT_PLAN.md and the relevant README before coding, propose changes and wait for approval, then test and update this plan. A milestone gets ✅ only after the on-phone check. |
+| 2026-10-01 | M2 URL ingestion built ahead of M0/M1 as a backend-only Edge Function (`ingest-url`). The table is named `saves`. One adapter per source (`youtube`, `instagram`, `pinterest`, `web`) sits on top of one shared Save model; platform-specific extras go in `source_metadata`. Thumbnails are stored as remote URLs for now. |
 
 ## 12. Open questions (decide at the relevant milestone)
 
-- **M1:** Product name and app icon (needed for the Share-menu label).
+- **M1b:** Product name and app icon (needed for the Share-menu label). The placeholder name is "Inspiration Library".
 - **M5:** Which testers, and on which devices?
 - **M7:** Final AI provider and model choice, tested on your real saved items.
 - **M10:** Re-check Google's current options for third-party apps in Gemini.
