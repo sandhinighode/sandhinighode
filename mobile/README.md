@@ -61,7 +61,23 @@ through **Brevo** (free: 300 emails a day), which also unlocks editing the email
      ```
    Click **Save** on each.
 
-### 3. Connect the app (your laptop)
+### 3. Upload the link reader (Command Prompt on your laptop)
+
+The **link reader** is a small program that runs on Supabase's servers. When you save a link, it works out
+where the link is from and fetches its title, description and author. Upload it once from the
+**project folder** (not `mobile`). Replace the project ID with yours:
+
+```
+cd sandhinighode
+npx supabase login
+npx supabase functions deploy ingest-url --project-ref YOUR-PROJECT-ID --use-api --no-verify-jwt
+```
+
+`npx supabase login` opens your browser once: click **Authorize**. Check that it worked in Supabase:
+left sidebar → **Edge Functions**, where **ingest-url** should be listed. Re-run the `deploy` line whenever the
+link reader changes; I'll tell you when.
+
+### 4. Connect the app (your laptop)
 
 Install once: **Node.js LTS** (nodejs.org) and **Git** (git-scm.com). Then, in **Command Prompt**:
 
@@ -86,12 +102,14 @@ You can build the URL from the project ID in your browser's address bar
 
 Then start the app with `npx expo start`, and scan the QR code with **Expo Go** (Google Play Store).
 
-### 4. Sign in (your phone)
+### 5. Sign in and save a link (your phone)
 
 1. The app shows **Sign in**. Type your email and tap **Send code**.
 2. Open the email (check spam the first time) and type the code into the app. Tap **Sign in**.
-3. You'll see your library. It says **"No saves yet"** until saving links arrives in the next step.
-4. Close and reopen the app: you should still be signed in. **Sign out** is at the top right.
+3. You'll see your library, with a **Paste a link** box at the top. **Sign out** is at the top right.
+4. Paste a link (e.g. a YouTube video) and tap **Save**. It appears in the list with its title.
+   Saving the same link again says "Already in your library".
+5. Close and reopen the app: you should still be signed in.
 
 ## Troubleshooting
 
@@ -105,12 +123,14 @@ Then start the app with `npx expo start`, and scan the QR code with **Expo Go** 
 | "Token has expired or is invalid" | The code was mistyped or is old. Tap **Use a different email**, send a new code and use the newest email. |
 | "Couldn't load your library" + "permission denied" | You're running an old version of the app (no sign-in screen appeared): run `git pull`, then `npx expo start --clear`. Otherwise, setup step 1.3 wasn't run. |
 | `git pull` says "local changes … would be overwritten" for `package-lock.json` | Run `git restore package-lock.json`, then `git pull` again. |
+| Saving a link says "Function not found" or "Requested function was not found" | The link reader isn't uploaded yet (setup step 3). |
+| A saved link shows "…didn't share details…" or "couldn't reach…" | The site blocked the link reader or needs a login (common for Instagram). The link is still saved. |
 | Expo Go can't connect or keeps loading | Phone and laptop on different networks, or a firewall. Try `npx expo start --tunnel`. |
 
 ## Developer checks
 
 ```
-npm test            # screen, sign-in and database-query tests (fake database)
+npm test            # screen, sign-in, paste-a-link and database tests (fake database)
 npm run typecheck   # TypeScript
 npx expo lint       # code style
 ```
