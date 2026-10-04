@@ -1,6 +1,6 @@
 # Development Plan: Personal Inspiration Library
 
-_Last updated: 2026-10-02_
+_Last updated: 2026-10-03_
 
 This is the agreed architecture and build plan. It is written for a product/UX designer
 building with Claude Code. Each milestone is small enough to build, test on your own
@@ -248,7 +248,7 @@ when the current one works.
 
 ### MVP (no AI)
 
-**M1 · Foundation: app ↔ database** 🟡 _built and tested 2026-10-01; waiting for your on-phone check (absorbs the old M0)_
+**M1 · Foundation: app ↔ database** ✅ _done 2026-10-03: confirmed on the user's Android phone (absorbs the old M0)_
 - Expo app in `mobile/` (TypeScript, Expo Router, SDK 57). Runs in **Expo Go** on your Android phone
   from a Windows laptop. One screen, "Inspiration Library", lists saves from the database.
 - Supabase connection through `mobile/.env` (project URL + publishable key; see `mobile/.env.example`).
@@ -393,6 +393,7 @@ our function, and the cheapest model that gives good results for each task.
 | 2026-10-01 | D1–D7 agreed: Expo + Supabase; both platforms, Android-first daily testing; MVP without AI; cloud AI later through one swappable function; private beta audience; free tiers wherever possible. |
 | 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
 | 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
+| 2026-10-03 | M1 confirmed on device: hosted Supabase project set up via the SQL editor, app run from Windows in Expo Go, and a title edited in Supabase showed up in the app. |
 | 2026-10-02 | Working rule added in `CLAUDE.md`: always read DEVELOPMENT_PLAN.md and the relevant README before coding, propose changes and wait for approval, then test and update this plan. A milestone gets ✅ only after the on-phone check. |
 | 2026-10-01 | M2 URL ingestion built ahead of M0/M1 as a backend-only Edge Function (`ingest-url`). The table is named `saves`. One adapter per source (`youtube`, `instagram`, `pinterest`, `web`) sits on top of one shared Save model; platform-specific extras go in `source_metadata`. Thumbnails are stored as remote URLs for now. |
 
