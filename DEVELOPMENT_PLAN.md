@@ -206,6 +206,7 @@ The same URL can't be saved twice by the same user (`user_id` + `canonical_url` 
 | Service | Needed for | When | Cost to start |
 |---|---|---|---|
 | Supabase | Database, login, storage, functions, cron | M0 | Free tier |
+| Brevo (email via SMTP) | Sends sign-in code emails for Supabase Auth | M1b | Free (300 emails/day) |
 | Expo / EAS | Builds, over-the-air updates, push notifications | M0 | Free tier |
 | GitHub | Code hosting | M0 | Free |
 | Open Graph / page metadata (fetched by our own function) | Link previews for websites | M2 | Free |
@@ -263,7 +264,7 @@ when the current one works.
 - Not yet done from the old M0: an Expo account / development build (needed only for the Share menu, in M1b).
 
 **M1b · Accounts and capture (Android)**: built in three steps, each checked on your phone
-- **Step 1 · Login** 🟡 _built 2026-10-04; waiting for your on-phone check_. Sign in with a 6-digit email code,
+- **Step 1 · Login** ✅ _done 2026-10-04: confirmed on the user's phone (code sign-in, stays signed in, sign-out)_. Sign in with a 6-digit email code,
   stay signed in, sign out. Migration `20261004000000_remove_sample_saves_access.sql` removes the temporary
   M1 sample-row rule and the test record, and makes `user_id` required again. Logged-out users get no access.
 - **Step 2 · Link reader on** _(not started)_: deploy the `ingest-url` function, plus a "Paste a link" box in
@@ -292,6 +293,7 @@ when the current one works.
 **M5 · iOS and beta readiness**
 - Apple Developer account ($99). iOS share extension. TestFlight build installed on your iPad.
 - In-app account deletion, privacy policy page (free hosting) and basic onboarding.
+- Own domain for the app (~$10–15/year), verified in Brevo, so sign-in emails come from e.g. `hello@<app-domain>` instead of a personal address and don't land in spam.
 - Invite testers: iOS through TestFlight, Android through a direct APK link.
 - _Done when:_ a tester on iPhone and a tester on Android can each save and browse.
 
@@ -342,6 +344,8 @@ pricing page before relying on a number.
 | Supabase | **$0** | Free tier: roughly 500 MB database, 1 GB file storage, 50k monthly users and generous function calls. Thousands of saved items with thumbnails fit comfortably. **Catch:** free projects pause after about a week with no activity (one click to resume), and there are no automatic backups. |
 | GitHub | **$0** | Private repositories are free. |
 | Privacy policy hosting | **$0** | GitHub Pages or a public Notion page. |
+| Brevo (sign-in emails) | **$0** | Free plan: 300 emails a day. |
+| App domain | **~$10–15/year** | From M5, so emails come from the app's own address. |
 | Android testers | **$0** | Install via a direct APK link. Google Play ($25 once) is optional. |
 | Apple Developer Program | **$99/year** | Required to install on your iPad or any iPhone via TestFlight. Unavoidable for iOS; only needed from M5. |
 | Claude Code | Your existing Claude plan | Usually the biggest real cost of building. It isn't part of the app's running cost. |
@@ -397,6 +401,7 @@ our function, and the cheapest model that gives good results for each task.
 | 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
 | 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
 | 2026-10-03 | M1 confirmed on device: hosted Supabase project set up via the SQL editor, app run from Windows in Expo Go, and a title edited in Supabase showed up in the app. |
+| 2026-10-04 | **Brevo is the permanent email provider** (custom SMTP in Supabase). Supabase's built-in sender can't use edited templates and is heavily rate-limited, so it can't send codes. The sender is the user's personal address for now; an app domain verified in Brevo is planned for M5. M1b step 1 (login) confirmed on the phone. |
 | 2026-10-04 | Working rule added to `CLAUDE.md`: every request to create something in a tool must name the software, the exact location in it, and what to call it. |
 | 2026-10-04 | M1b login uses a **6-digit email code** instead of a magic link: it works in Expo Go and avoids fragile email→app deep links. Supabase's email templates must include `{{ .Token }}`. The built-in Supabase email sender is rate-limited, which is fine for one user; a proper email service is needed before testers (M5). |
 | 2026-10-04 | M1b adds a **"Paste a link" box** to the library: it lets the link reader be tested before the Share menu exists and stays useful as a fallback (e.g. on iPad). `supabase/seed.sql` was removed, since sample rows no longer exist. |
