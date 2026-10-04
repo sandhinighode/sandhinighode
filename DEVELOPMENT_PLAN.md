@@ -1,6 +1,6 @@
 # Development Plan: Personal Inspiration Library
 
-_Last updated: 2026-10-04_
+_Last updated: 2026-10-05_
 
 This is the agreed architecture and build plan. It is written for a product/UX designer
 building with Claude Code. Each milestone is small enough to build, test on your own
@@ -278,10 +278,18 @@ when the current one works.
   toast so you never leave Instagram. If that polish turns out to be large, it moves to M2.
 - _Done when:_ you share from Instagram, YouTube, Pinterest and Chrome, and each item appears in the list.
 
+**D1 · Design system and key screens (Claude Design)** _(week 1–2, before M2)_
+- Design the app's look in **Claude Design**: colours, fonts, spacing, card style, buttons and tone, plus the key
+  screens: sign-in, library card grid, item detail, the "Saved ✓" confirmation after sharing, and empty states.
+- Claude starts the design; the user reviews and refines it (the user leads design decisions). Once approved,
+  every later milestone is built to match it.
+- About 2–3 hours of the user's time. Each later milestone that adds screens starts with a short design review.
+- _Done when:_ the user has approved the design system and key screens.
+
 **M2 · Rich previews** _(backend built early on 2026-10-01: `ingest-url` function + source adapters; not deployed or connected to the app yet)_
 - `enrich-item` function: page metadata, YouTube and Pinterest oEmbed, source and content-type
   detection, stored thumbnails, duplicate detection.
-- Card grid UI, item detail screen and "Open original".
+- Card grid UI, item detail screen and "Open original", built to the approved D1 design.
 - **"Copied link" prompt:** when the app opens and a link was just copied (e.g. via Instagram's **Copy link**),
   offer "Save the link you just copied?" in one tap.
 - _Done when:_ most saves show a proper title and image. Failures show a placeholder card and can be retried.
@@ -290,6 +298,7 @@ when the current one works.
 - Collections (create, rename, reorder, add or remove items), tags, notes, archive, delete.
 - Automatic tags from hashtags. Automatic grouping and filtering by source.
 - Quick-save screen: choose a collection or add a note while sharing.
+- Starts with a design review of the collections and quick-save screens (Claude Design).
 - _Done when:_ you can keep your real saves tidy without friction.
 
 **M3b · Import existing saves** (after M3, so imported lists become collections)
@@ -319,6 +328,7 @@ when the current one works.
 **M4 · Search**
 - Keyword search over titles, descriptions, notes, shared text and tags.
 - Filters: source, content type, collection, tag, date.
+- Starts with a design review of the search screen (Claude Design).
 - _Done when:_ you can find things you remember a word from.
 
 **M5 · iOS and beta readiness**
@@ -326,6 +336,7 @@ when the current one works.
 - In-app account deletion, privacy policy page (free hosting) and basic onboarding.
 - Own domain for the app (~$10–15/year), verified in Brevo, so sign-in emails come from e.g. `hello@<app-domain>` instead of a personal address and don't land in spam.
 - Invite testers: iOS through TestFlight, Android through a direct APK link.
+- Design review of onboarding, including the optional "Bring your saves" import cards (Claude Design).
 - _Done when:_ a tester on iPhone and a tester on Android can each save and browse.
 
 **M6 · Rule-based resurfacing**
@@ -336,6 +347,29 @@ when the current one works.
 
 **🎯 MVP complete.** Use it for a few weeks and review which organizing and finding problems remain
 before adding AI.
+
+### Roadmap to the MVP: 6 weeks at about 6–7 hours a week
+
+The target is the **MVP (through M6) within 6 weeks** of 2026-10-05: about 35–40 hours of the user's time
+(testing on the phone, setup steps, design reviews and the occasional snag).
+
+| Week | Milestones | What you'll have at the end |
+|---|---|---|
+| 1 | Finish **M1b**, start **D1** | Share into the app from Instagram, YouTube, Pinterest and Chrome. Design direction agreed. |
+| 2 | Finish **D1**, **M2** | Approved design system and key screens. A designed app: card grid with images, detail screen, "Open original", "copied link" prompt. |
+| 3 | **M3 Organize** | Collections, tags, notes, archive/delete, auto-tags, choose a collection while sharing |
+| 4 | **M3b Imports** | Connect YouTube, Instagram file import, bookmarks file import |
+| 5 | **M4 Search**, start **M5** | Keyword search and filters. Apple account, app on the iPad. |
+| 6 | Finish **M5**, **M6** | Account deletion, privacy policy, app domain email, testers invited, daily "From your library" nudge → **🎯 MVP** |
+
+**Start early (these involve waiting):**
+- Week 1: choose the **app name** and buy the **domain** (needed for email and the iPad launch).
+- Week 3: apply for **Pinterest API access**. Approval can take weeks, so the Pinterest import may land just after the MVP.
+- Week 3: research Meta's scheduled transfers (see M3b).
+- Week 4: create the **Apple Developer account** ($99); Apple's approval can take a day or two.
+
+**If a week slips:** there's no buffer week at this pace, so trim instead of extending. Bookmarks import and
+the Pinterest import move after the MVP first, then M6 polish. The roadmap is updated at the end of each week.
 
 ### After the MVP (AI and beyond)
 
@@ -434,6 +468,7 @@ our function, and the cheapest model that gives good results for each task.
 | 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
 | 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
 | 2026-10-03 | M1 confirmed on device: hosted Supabase project set up via the SQL editor, app run from Windows in Expo Go, and a title edited in Supabase showed up in the app. |
+| 2026-10-05 | **Roadmap:** MVP (through M6) within 6 weeks at about 6–7 hours a week. New step **D1 · Design system and key screens** using **Claude Design** before M2, so screens are built once to an approved design; short design reviews at the start of M3, M4 and M5. |
 | 2026-10-04 | **Importing existing saves** becomes milestone M3b (after Organize, so lists map to collections): YouTube and Pinterest via official connections; Instagram and bookmarks via export files. **No automatic sync of Instagram's own Saves**: there's no official way, and unofficial methods (password login, scraping, accessibility) risk user bans and app removal. Instead: a fast Share-menu save (Step 3), a "copied link" prompt (M2), monthly catch-up re-imports, and research into Meta's scheduled transfers. Optional desktop browser extension for continuous bookmark sync. |
 | 2026-10-04 | `ingest-url` is deployed with the platform JWT check off (`verify_jwt = false` in `supabase/config.toml`): the function verifies the login itself via `auth.getUser()` and returns 401 otherwise. The platform check can wrongly reject the newer asymmetric login tokens. Deployed with `--use-api`, so no Docker is needed on Windows. |
 | 2026-10-04 | **Brevo is the permanent email provider** (custom SMTP in Supabase). Supabase's built-in sender can't use edited templates and is heavily rate-limited, so it can't send codes. The sender is the user's personal address for now; an app domain verified in Brevo is planned for M5. M1b step 1 (login) confirmed on the phone. |
