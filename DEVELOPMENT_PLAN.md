@@ -1,6 +1,6 @@
 # Development Plan: Personal Inspiration Library
 
-_Last updated: 2026-10-03_
+_Last updated: 2026-10-04_
 
 This is the agreed architecture and build plan. It is written for a product/UX designer
 building with Claude Code. Each milestone is small enough to build, test on your own
@@ -53,7 +53,7 @@ milestones on top of the same foundation.
 | Receiving shares | **`expo-share-intent`** (or the current equivalent) | Makes the app appear in the Share menu of Instagram, YouTube, Pinterest, Chrome and Safari. |
 | Local data and caching | **TanStack Query** | Keeps the library fast and handles loading, refreshing and offline-ish behavior. |
 | Backend | **Supabase** | A hosted Postgres database plus login, file storage, server functions and scheduled jobs. |
-| Login | **Supabase Auth** (email magic link, then Google and Apple sign-in) | Users get a login link by email, so you don't build password handling. |
+| Login | **Supabase Auth** (6-digit email code, then Google and Apple sign-in later) | Users type a code we email them, so you don't build password handling. |
 | Server logic | **Supabase Edge Functions** (TypeScript) | Small pieces of code that run on Supabase's servers, e.g. "fetch the preview for this link". |
 | Scheduled jobs | **Supabase Cron** | "Every morning at 8, pick something to resurface." |
 | Push notifications | **Expo Push Notifications** | Free and works for both platforms through one service. |
@@ -153,7 +153,7 @@ processing_error, processed_at, created_at, updated_at. The other columns below 
 | Field | Meaning |
 |---|---|
 | `id` | Unique ID |
-| `user_id` | Owner. **Temporarily optional (M1):** rows with no owner are sample rows the app can read before login exists. |
+| `user_id` | Owner. Required (it was briefly optional in M1 for a sample row; M1b made it required again). |
 | `url` | Exactly what was shared |
 | `canonical_url` | Cleaned-up URL (tracking junk removed), used to catch duplicates |
 | `source` | `instagram`, `youtube`, `pinterest`, `web` or `other` |
@@ -262,11 +262,14 @@ when the current one works.
   get approval before coding, test and update this plan afterwards).
 - Not yet done from the old M0: an Expo account / development build (needed only for the Share menu, in M1b).
 
-**M1b · Accounts and capture (Android)**
-- Login by email magic link. **Then remove the temporary M1 sample-row rule** (delete sample rows,
-  drop the policy, make `user_id` required again).
-- The app appears in Android's Share menu (needs a development build instead of Expo Go). Sharing saves
-  the URL and shared text to your library through the M2 `ingest-url` function.
+**M1b · Accounts and capture (Android)**: built in three steps, each checked on your phone
+- **Step 1 · Login** 🟡 _built 2026-10-04; waiting for your on-phone check_. Sign in with a 6-digit email code,
+  stay signed in, sign out. Migration `20261004000000_remove_sample_saves_access.sql` removes the temporary
+  M1 sample-row rule and the test record, and makes `user_id` required again. Logged-out users get no access.
+- **Step 2 · Link reader on** _(not started)_: deploy the `ingest-url` function, plus a "Paste a link" box in
+  the library.
+- **Step 3 · Share menu** _(not started)_: a development build (instead of Expo Go) so the app appears in
+  Android's Share menu. Shared links go through `ingest-url`.
 - _Done when:_ you share from Instagram, YouTube, Pinterest and Chrome, and each item appears in the list.
 
 **M2 · Rich previews** _(backend built early on 2026-10-01: `ingest-url` function + source adapters; not deployed or connected to the app yet)_
@@ -394,6 +397,8 @@ our function, and the cheapest model that gives good results for each task.
 | 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
 | 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
 | 2026-10-03 | M1 confirmed on device: hosted Supabase project set up via the SQL editor, app run from Windows in Expo Go, and a title edited in Supabase showed up in the app. |
+| 2026-10-04 | M1b login uses a **6-digit email code** instead of a magic link: it works in Expo Go and avoids fragile email→app deep links. Supabase's email templates must include `{{ .Token }}`. The built-in Supabase email sender is rate-limited, which is fine for one user; a proper email service is needed before testers (M5). |
+| 2026-10-04 | M1b adds a **"Paste a link" box** to the library: it lets the link reader be tested before the Share menu exists and stays useful as a fallback (e.g. on iPad). `supabase/seed.sql` was removed, since sample rows no longer exist. |
 | 2026-10-02 | Working rule added in `CLAUDE.md`: always read DEVELOPMENT_PLAN.md and the relevant README before coding, propose changes and wait for approval, then test and update this plan. A milestone gets ✅ only after the on-phone check. |
 | 2026-10-01 | M2 URL ingestion built ahead of M0/M1 as a backend-only Edge Function (`ingest-url`). The table is named `saves`. One adapter per source (`youtube`, `instagram`, `pinterest`, `web`) sits on top of one shared Save model; platform-specific extras go in `source_metadata`. Thumbnails are stored as remote URLs for now. |
 
