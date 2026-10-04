@@ -32,18 +32,34 @@ Prompt window open while you use the app. `git pull` downloads the latest change
    Each should say "Success". If you already ran 1 and 2 (Milestone 1), run **only 3**.
    Running a file a second time gives "already exists" errors, which are harmless.
 
-### 2. Turn on sign-in codes (Supabase website)
+### 2. Sign-in emails (Brevo + Supabase websites)
 
-By default Supabase emails a link. We want a **code** you can type into the app.
+Supabase's built-in email can only send links, but the app needs a **code**. So Supabase sends its emails
+through **Brevo** (free: 300 emails a day), which also unlocks editing the email templates.
 
-1. In Supabase, go to **Authentication → Emails** (on some projects it's called **Email Templates**).
-2. Open the **Magic Link** template. Replace its content with:
-   ```html
-   <h2>Your sign-in code</h2>
-   <p>Enter this code in Inspiration Library: <strong>{{ .Token }}</strong></p>
-   ```
+1. **Brevo account:** sign up at **brevo.com** (free plan).
+2. **Verify yourself as sender:** in Brevo, go to the top-right menu → **Senders, Domains & Dedicated IPs** →
+   **Senders** → **Add sender**. From name **Inspiration Library**, plus your email address. Click the link in
+   the confirmation email.
+3. **SMTP key:** in Brevo, go to the top-right menu → **SMTP & API** → **SMTP** tab. Note the **Login**
+   (looks like `…@smtp-brevo.com`). Click **Generate a new SMTP key** (choose **Standard**) and name it
+   **Supabase Inspiration Library**. Copy it now, because it's shown only once. Never put it in the app or in a chat.
+4. **Connect Supabase:** in Supabase, go to **Authentication → Emails → SMTP Settings** (or **Project Settings →
+   Authentication → SMTP Settings**). Turn on **Enable custom SMTP**:
+   - Sender email: your verified email · Sender name: `Inspiration Library`
+   - Host: `smtp-relay.brevo.com` · Port: `587`
+   - Username: the Brevo **Login** (not your own email) · Password: the **SMTP key**
+
    Click **Save**.
-3. Do the same for the **Confirm signup** template, which is used the very first time you sign in.
+5. **Email templates:** in Supabase, go to **Authentication → Emails → Templates**. Edit both **Confirm signup**
+   and **Magic Link**:
+   - Subject: `Your Inspiration Library code`
+   - Body:
+     ```html
+     <h2>Your sign-in code</h2>
+     <p>Enter this code in Inspiration Library: <strong>{{ .Token }}</strong></p>
+     ```
+   Click **Save** on each.
 
 ### 3. Connect the app (your laptop)
 
@@ -82,11 +98,13 @@ Then start the app with `npx expo start`, and scan the QR code with **Expo Go** 
 | What you see | Fix |
 |---|---|
 | "Database not connected yet" | `.env` is missing or has the example values. Fix it, stop the server (Ctrl+C) and run `npx expo start --clear`. |
-| The email has a link but no code | The email template wasn't changed (setup step 2). |
-| No email arrives | Check spam. Supabase's free email sender allows only a few emails per hour, so wait a while and try again. |
-| "Email rate limit exceeded" | Same as above: wait, then try again. |
+| The email has a link but no code | The email templates weren't changed or saved (setup step 2.5). Don't tap the link: it opens "localhost" and fails. |
+| "Error sending confirmation email" | Supabase couldn't send through Brevo. Check **Supabase → Logs → Auth**. `535 Authentication failed` means the SMTP Username must be the Brevo **Login** and the Password the **SMTP key** (setup step 2.4). |
+| No email arrives | Check spam (emails come from your own address via Brevo, so the first ones may land there). Check that the sender is verified in Brevo. |
+| "Email rate limit exceeded" or "wait before requesting" | You can request a code about once a minute. Wait, then try again. |
 | "Token has expired or is invalid" | The code was mistyped or is old. Tap **Use a different email**, send a new code and use the newest email. |
-| "Couldn't load your library" + "permission denied" | Setup step 1.3 wasn't run, or you're signed out. Sign in again. |
+| "Couldn't load your library" + "permission denied" | You're running an old version of the app (no sign-in screen appeared): run `git pull`, then `npx expo start --clear`. Otherwise, setup step 1.3 wasn't run. |
+| `git pull` says "local changes … would be overwritten" for `package-lock.json` | Run `git restore package-lock.json`, then `git pull` again. |
 | Expo Go can't connect or keeps loading | Phone and laptop on different networks, or a firewall. Try `npx expo start --tunnel`. |
 
 ## Developer checks
