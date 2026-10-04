@@ -219,7 +219,9 @@ The same URL can't be saved twice by the same user (`user_id` + `canonical_url` 
 | Supabase built-in embeddings + pgvector | Search by meaning | M8 | Free (part of Supabase) |
 | Apple App Intents (Siri) | Voice on iOS | M10 | Free (native code) |
 | Android App Actions / Gemini integration | Voice on Android | M10 | Free; Google's support for this is limited and changing |
-| Pinterest API v5, YouTube Data API | Optional bulk imports | Optional milestone | Free, but needs approval or quotas |
+| YouTube Data API (Google Cloud) | Import YouTube playlists | M3b | Free (quota); Google review before public use |
+| Pinterest API v5 | Import Pinterest boards | M3b | Free, after Pinterest approves the app |
+| Chrome Web Store | Publish the desktop browser extension | Optional, after M3b | $5 once |
 
 ---
 
@@ -227,12 +229,12 @@ The same URL can't be saved twice by the same user (`user_id` + `canonical_url` 
 
 | Area | The restriction | What we do about it |
 |---|---|---|
-| **Instagram import** | Instagram has **no API for reading a person's saved posts**. The old personal-account API was shut down, and scraping is against its terms and gets blocked. | Capture **one item at a time through the Share menu**. Optional later: import the "Saved" list from Instagram's *Download your information* export file. |
+| **Instagram import** | Instagram has **no API for saved posts**. Meta shut down the personal-account API (Basic Display) in December 2024. The remaining Instagram API only covers business/creator accounts' **own** posts. No app can detect taps on Instagram's own 🔖 Save. Password-based logins, scraping and Android accessibility tricks break the terms, risk bans and app-store removal, so **we won't use them**. | **Share menu** for new saves (made as quick as possible), a **"copied link" prompt**, and the **export-file import** with monthly catch-up re-imports (M3b). |
 | **Instagram previews** | Instagram pages often show a login wall to servers, so titles and images may come back empty. Image links from Instagram's servers also expire. | Save the shared text plus the URL, and show a branded placeholder card. Copy thumbnails into our storage when we can get them. Optional Meta oEmbed after app review. |
 | **YouTube "Watch Later"** | Not available through YouTube's API. "Liked videos" and your own playlists are. | Use the Share menu. Optional later: import playlists through the YouTube Data API. |
 | **YouTube transcripts** (for AI later) | No official API for captions on videos you don't own. | AI works from the title, description and your note. Revisit at M7. |
 | **Pinterest import** | The API requires an approved developer app, with trial access first. | Use the Share menu. Optional import milestone later. |
-| **Browser bookmarks** | Mobile browsers don't let other apps read bookmarks. | Use the Share menu for new saves. Optional later: import a bookmarks HTML file exported from desktop Chrome or Safari. |
+| **Browser bookmarks** | Mobile browsers don't let other apps read bookmarks, and synced Chrome bookmarks can't be read from a server. | Share menu for new saves; a bookmarks **export file** import (M3b); later a **desktop browser extension** that syncs bookmarks continuously. |
 | **Websites blocking previews** | Paywalls, bot protection and pages built with JavaScript can return nothing useful. | Keep the URL, mark the item `failed`, offer a retry and let you edit the title. |
 | **iOS share extension** | Runs in a separate, memory-limited mini-app and can't be tested in Expo Go (it needs a custom build). | Keep the share screen minimal, saving the URL plus note only. Heavy work happens on the server. |
 | **Background work on phones** | iOS and Android limit what apps can do in the background. | Everything scheduled (resurfacing, processing) runs on the server and reaches the phone as push notifications. |
@@ -271,13 +273,17 @@ when the current one works.
   in the library calls the `ingest-url` function (deployed with `npx supabase functions deploy`, see
   `mobile/README.md`). Shows "Saved ✓" or "Already in your library", and the reason when details couldn't be read.
 - **Step 3 · Share menu** _(not started)_: a development build (instead of Expo Go) so the app appears in
-  Android's Share menu. Shared links go through `ingest-url`.
+  Android's Share menu. Shared links go through `ingest-url`. Aim to make it as quick as Instagram's own 🔖:
+  our app as a **pinned shortcut** at the top of the share sheet, saving **in the background** with a "Saved ✓"
+  toast so you never leave Instagram. If that polish turns out to be large, it moves to M2.
 - _Done when:_ you share from Instagram, YouTube, Pinterest and Chrome, and each item appears in the list.
 
 **M2 · Rich previews** _(backend built early on 2026-10-01: `ingest-url` function + source adapters; not deployed or connected to the app yet)_
 - `enrich-item` function: page metadata, YouTube and Pinterest oEmbed, source and content-type
   detection, stored thumbnails, duplicate detection.
 - Card grid UI, item detail screen and "Open original".
+- **"Copied link" prompt:** when the app opens and a link was just copied (e.g. via Instagram's **Copy link**),
+  offer "Save the link you just copied?" in one tap.
 - _Done when:_ most saves show a proper title and image. Failures show a placeholder card and can be retried.
 
 **M3 · Organize**
@@ -285,6 +291,30 @@ when the current one works.
 - Automatic tags from hashtags. Automatic grouping and filtering by source.
 - Quick-save screen: choose a collection or add a note while sharing.
 - _Done when:_ you can keep your real saves tidy without friction.
+
+**M3b · Import existing saves** (after M3, so imported lists become collections)
+- Optional "Bring your saves" options, offered during onboarding and any time later. Never required.
+- Order, from most to least reliable:
+  | Source | Method | Keeps syncing? |
+  |---|---|---|
+  | YouTube playlists and liked videos | "Connect YouTube" (Google sign-in, YouTube Data API, official) | ✅ |
+  | Instagram saved posts and collections | Upload Instagram's **Download your information** file (JSON, "Saved" only) | ❌ one-time, plus catch-up re-imports |
+  | Pinterest boards | "Connect Pinterest" (Pinterest API, official, after Pinterest approves the app) | ✅ |
+  | Browser bookmarks | Upload a bookmarks file exported from a desktop browser | ❌ one-time |
+- **YouTube:** "Watch Later" can't be imported (YouTube blocks it for all apps). Needs a free Google Cloud
+  project. Fine for you plus up to 100 testers; Google reviews the app before public use.
+- **Instagram file import, onboarding design notes:**
+  - Effort for users: about 10 taps in Instagram's settings, then a **wait** (minutes to hours, officially
+    up to 48h) for Meta's email, then upload the .zip.
+  - Guide it inside the app: numbered steps with screenshots, and a button that opens Instagram's download page.
+  - Handle the wait: "Instagram will email you; come back and tap Import". Add a reminder later.
+  - Imported items keep their collection and the @account, but **no images or captions** (the file only has
+    links, and Instagram blocks fetching details). Set that expectation in the UI.
+  - **Monthly catch-up:** a gentle reminder to re-import; duplicates are skipped automatically, so only new
+    saves made with Instagram's own 🔖 come in.
+- **Research before M3b:** check whether Meta's "transfer your information" can send **saved posts** to Google
+  Drive **on a repeating schedule**. If so, the app could pick those files up automatically (near auto-sync).
+  Not confirmed yet.
 
 **M4 · Search**
 - Keyword search over titles, descriptions, notes, shared text and tags.
@@ -327,8 +357,10 @@ AI-suggested steps are optional.
 **M12 · Opt-in social (optional)**: share chosen items or collections, find people with
 overlapping shared interests, report and block tools. Nothing is shared unless you choose it.
 
-**Optional: bulk imports** (can slot in after M6): Instagram data-export file, browser
-bookmarks HTML, Pinterest boards, YouTube playlists.
+**Optional: desktop browser extension** (after M3b): a Chrome-family extension (Chrome, Edge, Brave; later
+Firefox) that, with permission, syncs your **bookmarks** to the library continuously and adds a "Save to
+Inspiration Library" button on any web page. One-time $5 Chrome Web Store fee. Safari needs a Mac to build,
+so it comes later.
 
 ---
 
@@ -402,6 +434,7 @@ our function, and the cheapest model that gives good results for each task.
 | 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
 | 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
 | 2026-10-03 | M1 confirmed on device: hosted Supabase project set up via the SQL editor, app run from Windows in Expo Go, and a title edited in Supabase showed up in the app. |
+| 2026-10-04 | **Importing existing saves** becomes milestone M3b (after Organize, so lists map to collections): YouTube and Pinterest via official connections; Instagram and bookmarks via export files. **No automatic sync of Instagram's own Saves**: there's no official way, and unofficial methods (password login, scraping, accessibility) risk user bans and app removal. Instead: a fast Share-menu save (Step 3), a "copied link" prompt (M2), monthly catch-up re-imports, and research into Meta's scheduled transfers. Optional desktop browser extension for continuous bookmark sync. |
 | 2026-10-04 | `ingest-url` is deployed with the platform JWT check off (`verify_jwt = false` in `supabase/config.toml`): the function verifies the login itself via `auth.getUser()` and returns 401 otherwise. The platform check can wrongly reject the newer asymmetric login tokens. Deployed with `--use-api`, so no Docker is needed on Windows. |
 | 2026-10-04 | **Brevo is the permanent email provider** (custom SMTP in Supabase). Supabase's built-in sender can't use edited templates and is heavily rate-limited, so it can't send codes. The sender is the user's personal address for now; an app domain verified in Brevo is planned for M5. M1b step 1 (login) confirmed on the phone. |
 | 2026-10-04 | Working rule added to `CLAUDE.md`: every request to create something in a tool must name the software, the exact location in it, and what to call it. |
