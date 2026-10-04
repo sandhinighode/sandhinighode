@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { fetchSaves, type Save } from "@/lib/saves";
+import { fetchSaves, type Save, saveLink, type SaveLinkResult } from "@/lib/saves";
 import { isSupabaseConfigured } from "@/lib/supabase";
 
 type State =
@@ -38,6 +38,14 @@ export default function LibraryScreen() {
     setRefreshing(false);
   };
 
+  // Put the saved item at the top (replacing it if it was already in the list, e.g. after a retry).
+  const onSaved = ({ save }: SaveLinkResult) =>
+    setState((current) =>
+      current.kind === "loaded"
+        ? { kind: "loaded", saves: [save, ...current.saves.filter((s) => s.id !== save.id)] }
+        : current
+    );
+
   if (!isSupabaseConfigured) {
     return (
       <Message
@@ -58,15 +66,75 @@ export default function LibraryScreen() {
   }
 
   return (
-    <FlatList
-      data={state.saves}
-      keyExtractor={(save) => save.id}
-      renderItem={({ item }) => <SaveRow save={item} />}
-      onRefresh={refresh}
-      refreshing={refreshing}
-      contentContainerStyle={state.saves.length === 0 ? styles.center : styles.list}
-      ListEmptyComponent={<Message title="No saves yet" body="Your saved inspiration will appear here." />}
-    />
+    <View style={styles.screen}>
+      <PasteLinkBox onSaved={onSaved} />
+      <FlatList
+        data={state.saves}
+        keyExtractor={(save) => save.id}
+        renderItem={({ item }) => <SaveRow save={item} />}
+        onRefresh={refresh}
+        refreshing={refreshing}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={state.saves.length === 0 ? styles.center : styles.list}
+        ListEmptyComponent={<Message title="No saves yet" body="Paste a link above to save your first inspiration." />}
+      />
+    </View>
+  );
+}
+
+function PasteLinkBox({ onSaved }: { onSaved: (result: SaveLinkResult) => void }) {
+  const [url, setUrl] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [feedback, setFeedback] = useState<{ text: string; isError: boolean } | null>(null);
+
+  const onSave = async () => {
+    if (!url.trim()) return;
+    setBusy(true);
+    setFeedback(null);
+    try {
+      const result = await saveLink(url);
+      onSaved(result);
+      setUrl("");
+      setFeedback({
+        text: !result.created
+          ? "Already in your library"
+          : result.save.status === "failed"
+          ? "Saved, but its details couldn't be read"
+          : "Saved ✓",
+        isError: false,
+      });
+    } catch (err) {
+      setFeedback({ text: err instanceof Error ? err.message : String(err), isError: true });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <View style={styles.pasteBox}>
+      <View style={styles.pasteRow}>
+        <TextInput
+          style={styles.input}
+          placeholder="Paste a link"
+          value={url}
+          onChangeText={setUrl}
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="url"
+          editable={!busy}
+          onSubmitEditing={onSave}
+        />
+        <Pressable
+          accessibilityRole="button"
+          onPress={onSave}
+          disabled={busy || !url.trim()}
+          style={[styles.button, (busy || !url.trim()) && styles.buttonInactive]}
+        >
+          {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Save</Text>}
+        </Pressable>
+      </View>
+      {feedback ? <Text style={feedback.isError ? styles.error : styles.feedback}>{feedback.text}</Text> : null}
+    </View>
   );
 }
 
@@ -81,6 +149,9 @@ function SaveRow({ save }: { save: Save }) {
       <Text style={styles.url} numberOfLines={1}>
         {save.url}
       </Text>
+      {save.status === "failed" && save.processing_error
+        ? <Text style={styles.meta}>{save.processing_error}</Text>
+        : null}
     </View>
   );
 }
@@ -95,6 +166,15 @@ function Message({ title, body }: { title: string; body: string }) {
 }
 
 const styles = StyleSheet.create({
+  screen: { flex: 1 },
+  pasteBox: { padding: 16, paddingBottom: 4, gap: 6 },
+  pasteRow: { flexDirection: "row", gap: 8 },
+  input: { flex: 1, borderWidth: 1, borderColor: "#ccc", borderRadius: 10, paddingHorizontal: 12, fontSize: 16 },
+  button: { backgroundColor: "#1a5fb4", borderRadius: 10, paddingHorizontal: 18, justifyContent: "center" },
+  buttonInactive: { opacity: 0.5 },
+  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  feedback: { fontSize: 14, color: "#26a269" },
+  error: { fontSize: 14, color: "#c01c28" },
   center: { flexGrow: 1, alignItems: "center", justifyContent: "center", padding: 24, gap: 8 },
   list: { padding: 16, gap: 12 },
   card: { padding: 16, borderRadius: 12, backgroundColor: "#f2f2f2", gap: 4 },

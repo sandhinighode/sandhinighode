@@ -1,0 +1,9 @@
+# Settings read by the Supabase command-line tool (e.g. `npx supabase functions deploy`).
+# Your real project is chosen with --project-ref when deploying; nothing secret belongs here.
+project_id = "sandhinighode"
+
+# The link reader. The function itself checks the login (supabase.auth.getUser) and refuses anyone
+# who isn't signed in, so the platform's older built-in token check is switched off: it can wrongly
+# reject the newer login tokens that recent Supabase projects issue.
+[functions.ingest-url]
+verify_jwt = false

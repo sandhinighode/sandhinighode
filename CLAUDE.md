@@ -26,7 +26,8 @@ The owner is a product/UX designer, not an engineer. Explain things in plain Eng
 
 - `mobile/`: the Expo app (TypeScript, Expo Router, Expo SDK 57). See `mobile/AGENTS.md` for Expo rules.
 - `supabase/migrations/`: database changes, one SQL file per change (never edit an applied one).
-- `supabase/functions/`: server functions (Deno). `ingest-url` is built but not yet connected (M2).
+- `supabase/functions/`: server functions (Deno). `ingest-url` is the link reader, used by the app's "Paste a link" box.
+  Deploy: `npx supabase functions deploy ingest-url --project-ref <id> --use-api --no-verify-jwt`.
 - `tests/`: Deno tests for the server functions; `tests/sql/` has checks for database rules.
 
 ## Checks

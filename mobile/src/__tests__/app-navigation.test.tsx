@@ -6,7 +6,7 @@ import { useSession } from "@/lib/auth";
 // Uses the real app layout and screens; only the login state and the database are faked.
 jest.mock("@/lib/auth", () => ({ ...jest.requireActual("@/lib/auth"), useSession: jest.fn() }));
 jest.mock("@/lib/supabase", () => ({ isSupabaseConfigured: true, supabase: null }));
-jest.mock("@/lib/saves", () => ({ fetchSaves: jest.fn().mockResolvedValue([]) }));
+jest.mock("@/lib/saves", () => ({ fetchSaves: jest.fn().mockResolvedValue([]), saveLink: jest.fn() }));
 const mockUseSession = jest.mocked(useSession);
 
 const fakeSession = { user: { id: "u1", email: "me@example.com" } } as unknown as Session;

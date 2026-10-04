@@ -267,8 +267,9 @@ when the current one works.
 - **Step 1 · Login** ✅ _done 2026-10-04: confirmed on the user's phone (code sign-in, stays signed in, sign-out)_. Sign in with a 6-digit email code,
   stay signed in, sign out. Migration `20261004000000_remove_sample_saves_access.sql` removes the temporary
   M1 sample-row rule and the test record, and makes `user_id` required again. Logged-out users get no access.
-- **Step 2 · Link reader on** _(not started)_: deploy the `ingest-url` function, plus a "Paste a link" box in
-  the library.
+- **Step 2 · Link reader on** 🟡 _built 2026-10-04; waiting for deploy and your on-phone check_. A "Paste a link" box
+  in the library calls the `ingest-url` function (deployed with `npx supabase functions deploy`, see
+  `mobile/README.md`). Shows "Saved ✓" or "Already in your library", and the reason when details couldn't be read.
 - **Step 3 · Share menu** _(not started)_: a development build (instead of Expo Go) so the app appears in
   Android's Share menu. Shared links go through `ingest-url`.
 - _Done when:_ you share from Instagram, YouTube, Pinterest and Chrome, and each item appears in the list.
@@ -401,6 +402,7 @@ our function, and the cheapest model that gives good results for each task.
 | 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
 | 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
 | 2026-10-03 | M1 confirmed on device: hosted Supabase project set up via the SQL editor, app run from Windows in Expo Go, and a title edited in Supabase showed up in the app. |
+| 2026-10-04 | `ingest-url` is deployed with the platform JWT check off (`verify_jwt = false` in `supabase/config.toml`): the function verifies the login itself via `auth.getUser()` and returns 401 otherwise. The platform check can wrongly reject the newer asymmetric login tokens. Deployed with `--use-api`, so no Docker is needed on Windows. |
 | 2026-10-04 | **Brevo is the permanent email provider** (custom SMTP in Supabase). Supabase's built-in sender can't use edited templates and is heavily rate-limited, so it can't send codes. The sender is the user's personal address for now; an app domain verified in Brevo is planned for M5. M1b step 1 (login) confirmed on the phone. |
 | 2026-10-04 | Working rule added to `CLAUDE.md`: every request to create something in a tool must name the software, the exact location in it, and what to call it. |
 | 2026-10-04 | M1b login uses a **6-digit email code** instead of a magic link: it works in Expo Go and avoids fragile email→app deep links. Supabase's email templates must include `{{ .Token }}`. The built-in Supabase email sender is rate-limited, which is fine for one user; a proper email service is needed before testers (M5). |
