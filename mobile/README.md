@@ -103,7 +103,8 @@ Then start the app with `npx expo start`, and scan the QR code with **Expo Go** 
 | No email arrives | Check spam (emails come from your own address via Brevo, so the first ones may land there). Check that the sender is verified in Brevo. |
 | "Email rate limit exceeded" or "wait before requesting" | You can request a code about once a minute. Wait, then try again. |
 | "Token has expired or is invalid" | The code was mistyped or is old. Tap **Use a different email**, send a new code and use the newest email. |
-| "Couldn't load your library" + "permission denied" | Setup step 1.3 wasn't run, or you're signed out. Sign in again. |
+| "Couldn't load your library" + "permission denied" | You're running an old version of the app (no sign-in screen appeared): run `git pull`, then `npx expo start --clear`. Otherwise, setup step 1.3 wasn't run. |
+| `git pull` says "local changes … would be overwritten" for `package-lock.json` | Run `git restore package-lock.json`, then `git pull` again. |
 | Expo Go can't connect or keeps loading | Phone and laptop on different networks, or a firewall. Try `npx expo start --tunnel`. |
 
 ## Developer checks
