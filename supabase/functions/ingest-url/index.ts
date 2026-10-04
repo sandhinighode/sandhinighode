@@ -6,6 +6,7 @@
 // A link whose details couldn't be fetched is still saved and returned with status "failed".
 
 import { createClient } from "@supabase/supabase-js";
+import { bearerToken, userAuthHeaders } from "../_shared/ingest/auth.ts";
 import { ingestUrl } from "../_shared/ingest/pipeline.ts";
 import { SupabaseSaveRepository } from "../_shared/ingest/supabase-repository.ts";
 import { IngestError } from "../_shared/ingest/types.ts";
@@ -16,14 +17,14 @@ const json = (body: unknown, status = 200) =>
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "Use POST." }, 405);
 
-  const authorization = req.headers.get("authorization");
-  if (!authorization) return json({ error: "Sign in required." }, 401);
+  const token = bearerToken(req.headers.get("authorization"));
+  if (!token) return json({ error: "Sign in required." }, 401);
 
   const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
-    global: { headers: { authorization } },
+    global: { headers: userAuthHeaders(token) },
     auth: { persistSession: false },
   });
-  const { data: { user } } = await db.auth.getUser();
+  const { data: { user } } = await db.auth.getUser(token);
   if (!user) return json({ error: "Sign in required." }, 401);
 
   let body: { url?: unknown; shared_text?: unknown };
