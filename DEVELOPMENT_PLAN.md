@@ -263,16 +263,16 @@ when the current one works.
   → **Setup and verification steps: `mobile/README.md`.**
 - `CLAUDE.md` added with the working rules for every session (read the plan and READMEs first,
   get approval before coding, test and update this plan afterwards).
-- Not yet done from the old M0: an Expo account / development build (needed only for the Share menu, in M1b).
+- The Expo account and development build from the old M0 were done in M1b step 3.
 
-**M1b · Accounts and capture (Android)**: built in three steps, each checked on your phone
+**M1b · Accounts and capture (Android)** ✅ _done 2026-10-07_: built in three steps, each checked on your phone
 - **Step 1 · Login** ✅ _done 2026-10-04: confirmed on the user's phone (code sign-in, stays signed in, sign-out)_. Sign in with a 6-digit email code,
   stay signed in, sign out. Migration `20261004000000_remove_sample_saves_access.sql` removes the temporary
   M1 sample-row rule and the test record, and makes `user_id` required again. Logged-out users get no access.
 - **Step 2 · Link reader on** ✅ _done 2026-10-07: confirmed on the user's phone (YouTube, websites, Substack, Instagram, duplicates, invalid input)_. A "Paste a link" box
   in the library calls the `ingest-url` function (deployed with `npx supabase functions deploy`, see
   `mobile/README.md`). Shows "Saved ✓" or "Already in your library", and the reason when details couldn't be read.
-- **Step 3 · Share menu** 🟡 _built 2026-10-07; waiting for the Expo project, the cloud build and your on-phone check_.
+- **Step 3 · Share menu** ✅ _done 2026-10-07: confirmed on the user's phone (development build installed; shared links are saved and appear in the library)_.
   A development build (`expo-dev-client`, built with EAS) replaces Expo Go. `expo-share-intent` registers the app for
   shared text/links on Android. The library saves the shared link through `ingest-url` and shows "Saved ✓". If you're
   signed out, it saves right after sign-in. Share → app opens → Back returns you to the source app.
@@ -470,6 +470,7 @@ our function, and the cheapest model that gives good results for each task.
 | 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
 | 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
 | 2026-10-03 | M1 confirmed on device: hosted Supabase project set up via the SQL editor, app run from Windows in Expo Go, and a title edited in Supabase showed up in the app. |
+| 2026-10-07 | **M1b done**, confirmed on the user's phone: the development build (Expo project `inspiration-app`, owner `sandhinis-team`) installs from the EAS link, and links shared from other apps are saved and appear in the library. The Expo project name must match `slug` in `app.json`. No emulator is used: answer **No** when EAS offers to install on one. |
 | 2026-10-07 | M1b step 3 uses a **development build** (`expo-dev-client`, built in the cloud with EAS, installed as an APK) instead of Expo Go, plus `expo-share-intent` 8.0.1 for the Share menu. Android app ID `com.sandhinighode.inspirationlibrary` (can change before a Play Store release). The pinned share-sheet shortcut and background saving need custom native code, so they move to M2. Tap-to-open stays in M2 as planned. |
 | 2026-10-05 | **Roadmap:** MVP (through M6) within 6 weeks at about 6–7 hours a week. New step **D1 · Design system and key screens** using **Claude Design** before M2, so screens are built once to an approved design; short design reviews at the start of M3, M4 and M5. |
 | 2026-10-04 | **Importing existing saves** becomes milestone M3b (after Organize, so lists map to collections): YouTube and Pinterest via official connections; Instagram and bookmarks via export files. **No automatic sync of Instagram's own Saves**: there's no official way, and unofficial methods (password login, scraping, accessibility) risk user bans and app removal. Instead: a fast Share-menu save (Step 3), a "copied link" prompt (M2), monthly catch-up re-imports, and research into Meta's scheduled transfers. Optional desktop browser extension for continuous bookmark sync. |
