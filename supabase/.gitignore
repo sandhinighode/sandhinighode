@@ -1,0 +1,3 @@
+# Files the Supabase command-line tool writes locally (not part of the project)
+.temp/
+.branches/
