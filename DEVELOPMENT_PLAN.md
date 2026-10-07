@@ -278,7 +278,14 @@ when the current one works.
   signed out, it saves right after sign-in. Share → app opens → Back returns you to the source app.
 - _Done when:_ you share from Instagram, YouTube, Pinterest and Chrome, and each item appears in the list.
 
-**D1 · Design system and key screens (Claude Design)** _(week 1–2, before M2)_ 🟡 _Round 1 (three mood directions) on the design canvas "Jugnu – D1 Design" on claude.ai, 2026-10-07_
+**D1 · Design system and key screens (Claude Design)** _(week 1–2, before M2)_ 🟡 _in progress_
+- **Design canvas:** "Jugnu – D1 Design" on claude.ai: https://claude.ai/artifact/4tpLWbpNKpqMbn31LxjtyS
+- **Chosen library direction (2026-10-07): board "B · The collected room", as-is.** Deep fig header with mustard
+  highlights and a "Paste a link" box; arched cards with thin brass outlines on parchment; jewel-coloured tags; difficulty
+  as three dots; small source icons; dark rounded bottom tab bar. Fonts: Gloock (headings) and Instrument Sans (text).
+  Boards A, C, D, E and F (incl. jharoka shapes and "difficulty decks") stay on the canvas as explored ideas only.
+- **Next (Round 3):** the other key screens in the B style: sign-in, item detail with "Open original", the "Saved ✓"
+  moment after sharing, empty and error states. D1 is ✅ once the user approves them.
 - **Brief (from the user):** cosy, inspirational, energetic and refreshing; bright and earthy colours; "like learning
   something new from scratch". Colour inspiration: collected vintage interiors (claret, fig, moss, mustard, turquoise,
   cornflower, petal, brass on warm cream). Feeling reference: Headway. Light mode only for now.
@@ -479,6 +486,7 @@ our function, and the cheapest model that gives good results for each task.
 | 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
 | 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
 | 2026-10-03 | M1 confirmed on device: hosted Supabase project set up via the SQL editor, app run from Windows in Expo Go, and a title edited in Supabase showed up in the app. |
+| 2026-10-07 | **D1 library direction chosen: "B · The collected room"**, as originally drawn. Later explorations (search box at the top, jharoka-shaped cards, difficulty decks) were tried on the canvas and set aside for now. |
 | 2026-10-07 | **D1 started.** Working name **Jugnu** ("a firefly for your ideas"). Design brief: cosy, inspirational, energetic, refreshing; bright and earthy colours; Headway as a feeling reference; light mode only for now. Card design includes warm titles, tags and a difficulty badge from the start; they are filled in step by step: tidied titles in M2, manual difficulty in M3, AI-written titles, grouping and suggested difficulty in M7. Designs are made on a claude.ai design canvas ("Jugnu – D1 Design"). |
 | 2026-10-07 | **M1b done**, confirmed on the user's phone: the development build (Expo project `inspiration-app`, owner `sandhinis-team`) installs from the EAS link, and links shared from other apps are saved and appear in the library. The Expo project name must match `slug` in `app.json`. No emulator is used: answer **No** when EAS offers to install on one. |
 | 2026-10-07 | M1b step 3 uses a **development build** (`expo-dev-client`, built in the cloud with EAS, installed as an APK) instead of Expo Go, plus `expo-share-intent` 8.0.1 for the Share menu. Android app ID `com.sandhinighode.inspirationlibrary` (can change before a Play Store release). The pinned share-sheet shortcut and background saving need custom native code, so they move to M2. Tap-to-open stays in M2 as planned. |
