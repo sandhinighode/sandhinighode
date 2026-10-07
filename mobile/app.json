@@ -52,6 +52,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "owner": "sandhinis-team",
+    "extra": {
+      "eas": {
+        "projectId": "b0fa7fa1-808f-4a48-8a29-8e454185c8f0"
+      }
     }
   }
 }

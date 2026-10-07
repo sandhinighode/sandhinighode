@@ -121,7 +121,7 @@ Expo Go can't appear in your phone's Share menu, so you build **your own version
 
 1. **Expo account:** at **expo.dev**, click **Sign up** (free).
 2. **Expo project:** at **expo.dev**, go to **Projects** → **Create a project**, named exactly `inspiration-library`.
-   Send the **Project ID** and your **Expo username** to Claude, who adds them to `app.json`. Then run `git pull`.
+   Its Project ID and owner go in `app.json` (already done for this project: owner `sandhinis-team`).
 3. **Build it** (Command Prompt, in the `mobile` folder):
    ```
    npx eas-cli@latest login
