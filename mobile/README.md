@@ -120,8 +120,8 @@ Expo Go can't appear in your phone's Share menu, so you build **your own version
 (free) and install it. It works like Expo Go: it loads the app's code from your laptop.
 
 1. **Expo account:** at **expo.dev**, click **Sign up** (free).
-2. **Expo project:** at **expo.dev**, go to **Projects** → **Create a project**, named exactly `inspiration-library`.
-   Its Project ID and owner go in `app.json` (already done for this project: owner `sandhinis-team`).
+2. **Expo project:** at **expo.dev**, go to **Projects** → **Create a project**. Its name must match `slug` in `app.json`,
+   and its Project ID and owner go in `app.json` (already done: project `inspiration-app`, owner `sandhinis-team`).
 3. **Build it** (Command Prompt, in the `mobile` folder):
    ```
    npx eas-cli@latest login
@@ -159,6 +159,7 @@ changes just need `git pull`.
 | Inspiration Library isn't in the Share menu | You're using Expo Go instead of your own app (setup step 6), or the Share list needs **More**. Reinstall the build if needed. |
 | The app opens from Share but says it can't connect / "Unable to load script" | The laptop server isn't running, or it's on a different Wi-Fi. Run `npx expo start --clear`, then share again. |
 | Shared from an app but it says "didn't include a link" | That app shared plain text without a link. Use its **Copy link** option and the **Paste a link** box instead. |
+| Build says "Slug for project … does not match the slug field" | The Expo project's name differs from `slug` in `app.json`. Tell Claude both names. |
 | Expo Go can't connect or keeps loading | Phone and laptop on different networks, or a firewall. Try `npx expo start --tunnel`. |
 
 ## Developer checks
