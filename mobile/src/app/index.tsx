@@ -1,8 +1,18 @@
-import { useEffect, useState } from "react";
+import { useShareIntentContext } from "expo-share-intent";
+import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { fetchSaves, type Save, saveLink, type SaveLinkResult } from "@/lib/saves";
 import { isSupabaseConfigured } from "@/lib/supabase";
+
+type Feedback = { text: string; isError: boolean };
+
+/** What to tell the user after a save. */
+export function savedMessage({ created, save }: SaveLinkResult): string {
+  if (!created) return "Already in your library";
+  if (save.status === "failed") return "Saved, but its details couldn't be read";
+  return "Saved ✓";
+}
 
 type State =
   | { kind: "loading" }
@@ -20,6 +30,9 @@ async function loadSaves(): Promise<State> {
 export default function LibraryScreen() {
   const [state, setState] = useState<State>({ kind: "loading" });
   const [refreshing, setRefreshing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const { hasShareIntent, shareIntent, resetShareIntent } = useShareIntentContext();
 
   useEffect(() => {
     if (!isSupabaseConfigured) return;
@@ -38,13 +51,44 @@ export default function LibraryScreen() {
     setRefreshing(false);
   };
 
-  // Put the saved item at the top (replacing it if it was already in the list, e.g. after a retry).
-  const onSaved = ({ save }: SaveLinkResult) =>
-    setState((current) =>
-      current.kind === "loaded"
-        ? { kind: "loaded", saves: [save, ...current.saves.filter((s) => s.id !== save.id)] }
-        : current
-    );
+  /** Save a link (typed or shared) and put it at the top of the list. Returns true on success. */
+  const save = async (url: string): Promise<boolean> => {
+    setSaving(true);
+    setFeedback(null);
+    try {
+      const result = await saveLink(url);
+      setState((current) =>
+        current.kind === "loaded"
+          ? { kind: "loaded", saves: [result.save, ...current.saves.filter((s) => s.id !== result.save.id)] }
+          : current
+      );
+      setFeedback({ text: savedMessage(result), isError: false });
+      return true;
+    } catch (err) {
+      setFeedback({ text: err instanceof Error ? err.message : String(err), isError: true });
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // A link shared into the app from another app's Share menu: save it once the library has loaded.
+  // (If the user wasn't signed in, this screen only appears after sign-in, so the share waits until then.)
+  const libraryLoaded = state.kind === "loaded";
+  const handledShare = useRef<string | null>(null);
+  useEffect(() => {
+    if (!hasShareIntent || !libraryLoaded) return;
+    const key = `${shareIntent.webUrl ?? ""}|${shareIntent.text ?? ""}`;
+    if (handledShare.current === key) return;
+    handledShare.current = key;
+    resetShareIntent();
+    // Reacting to an outside event (a link shared in from another app), so updating state here is intended.
+    /* eslint-disable react-hooks/set-state-in-effect */
+    if (shareIntent.webUrl) save(shareIntent.webUrl);
+    else setFeedback({ text: "That share didn't include a link, so nothing was saved.", isError: true });
+    /* eslint-enable react-hooks/set-state-in-effect */
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once per incoming share
+  }, [hasShareIntent, libraryLoaded, shareIntent]);
 
   if (!isSupabaseConfigured) {
     return (
@@ -67,7 +111,7 @@ export default function LibraryScreen() {
 
   return (
     <View style={styles.screen}>
-      <PasteLinkBox onSaved={onSaved} />
+      <PasteLinkBox onSave={save} saving={saving} feedback={feedback} />
       <FlatList
         data={state.saves}
         keyExtractor={(save) => save.id}
@@ -82,32 +126,17 @@ export default function LibraryScreen() {
   );
 }
 
-function PasteLinkBox({ onSaved }: { onSaved: (result: SaveLinkResult) => void }) {
+function PasteLinkBox({ onSave, saving, feedback }: {
+  onSave: (url: string) => Promise<boolean>;
+  saving: boolean;
+  feedback: Feedback | null;
+}) {
   const [url, setUrl] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [feedback, setFeedback] = useState<{ text: string; isError: boolean } | null>(null);
+  const busy = saving;
 
-  const onSave = async () => {
-    if (!url.trim()) return;
-    setBusy(true);
-    setFeedback(null);
-    try {
-      const result = await saveLink(url);
-      onSaved(result);
-      setUrl("");
-      setFeedback({
-        text: !result.created
-          ? "Already in your library"
-          : result.save.status === "failed"
-          ? "Saved, but its details couldn't be read"
-          : "Saved ✓",
-        isError: false,
-      });
-    } catch (err) {
-      setFeedback({ text: err instanceof Error ? err.message : String(err), isError: true });
-    } finally {
-      setBusy(false);
-    }
+  const submit = async () => {
+    if (!url.trim() || busy) return;
+    if (await onSave(url)) setUrl("");
   };
 
   return (
@@ -122,11 +151,11 @@ function PasteLinkBox({ onSaved }: { onSaved: (result: SaveLinkResult) => void }
           autoCorrect={false}
           keyboardType="url"
           editable={!busy}
-          onSubmitEditing={onSave}
+          onSubmitEditing={submit}
         />
         <Pressable
           accessibilityRole="button"
-          onPress={onSave}
+          onPress={submit}
           disabled={busy || !url.trim()}
           style={[styles.button, (busy || !url.trim()) && styles.buttonInactive]}
         >

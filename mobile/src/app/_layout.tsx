@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import { ShareIntentProvider } from "expo-share-intent";
 import { ActivityIndicator, Alert, Pressable, Text, View } from "react-native";
 
 import { signOut, useSession } from "@/lib/auth";
@@ -20,17 +21,20 @@ export default function RootLayout() {
   const showLibrary = Boolean(session) || !isSupabaseConfigured;
 
   return (
-    <Stack>
-      <Stack.Protected guard={showLibrary}>
-        <Stack.Screen
-          name="index"
-          options={{ title: "Inspiration Library", headerRight: session ? () => <SignOutButton /> : undefined }}
-        />
-      </Stack.Protected>
-      <Stack.Protected guard={!showLibrary}>
-        <Stack.Screen name="sign-in" options={{ title: "Inspiration Library" }} />
-      </Stack.Protected>
-    </Stack>
+    // Receives links shared into the app from other apps' Share menus (used by the library screen).
+    <ShareIntentProvider>
+      <Stack>
+        <Stack.Protected guard={showLibrary}>
+          <Stack.Screen
+            name="index"
+            options={{ title: "Inspiration Library", headerRight: session ? () => <SignOutButton /> : undefined }}
+          />
+        </Stack.Protected>
+        <Stack.Protected guard={!showLibrary}>
+          <Stack.Screen name="sign-in" options={{ title: "Inspiration Library" }} />
+        </Stack.Protected>
+      </Stack>
+    </ShareIntentProvider>
   );
 }
 
