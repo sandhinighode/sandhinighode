@@ -269,13 +269,13 @@ when the current one works.
 - **Step 1 · Login** ✅ _done 2026-10-04: confirmed on the user's phone (code sign-in, stays signed in, sign-out)_. Sign in with a 6-digit email code,
   stay signed in, sign out. Migration `20261004000000_remove_sample_saves_access.sql` removes the temporary
   M1 sample-row rule and the test record, and makes `user_id` required again. Logged-out users get no access.
-- **Step 2 · Link reader on** 🟡 _built 2026-10-04; waiting for deploy and your on-phone check_. A "Paste a link" box
+- **Step 2 · Link reader on** ✅ _done 2026-10-07: confirmed on the user's phone (YouTube, websites, Substack, Instagram, duplicates, invalid input)_. A "Paste a link" box
   in the library calls the `ingest-url` function (deployed with `npx supabase functions deploy`, see
   `mobile/README.md`). Shows "Saved ✓" or "Already in your library", and the reason when details couldn't be read.
-- **Step 3 · Share menu** _(not started)_: a development build (instead of Expo Go) so the app appears in
-  Android's Share menu. Shared links go through `ingest-url`. Aim to make it as quick as Instagram's own 🔖:
-  our app as a **pinned shortcut** at the top of the share sheet, saving **in the background** with a "Saved ✓"
-  toast so you never leave Instagram. If that polish turns out to be large, it moves to M2.
+- **Step 3 · Share menu** 🟡 _built 2026-10-07; waiting for the Expo project, the cloud build and your on-phone check_.
+  A development build (`expo-dev-client`, built with EAS) replaces Expo Go. `expo-share-intent` registers the app for
+  shared text/links on Android. The library saves the shared link through `ingest-url` and shows "Saved ✓". If you're
+  signed out, it saves right after sign-in. Share → app opens → Back returns you to the source app.
 - _Done when:_ you share from Instagram, YouTube, Pinterest and Chrome, and each item appears in the list.
 
 **D1 · Design system and key screens (Claude Design)** _(week 1–2, before M2)_
@@ -290,6 +290,8 @@ when the current one works.
 - `enrich-item` function: page metadata, YouTube and Pinterest oEmbed, source and content-type
   detection, stored thumbnails, duplicate detection.
 - Card grid UI, item detail screen and "Open original", built to the approved D1 design.
+- **Faster sharing (moved from M1b step 3):** our app as a **pinned shortcut** at the top of the share sheet, and
+  saving **in the background** with a toast so you never leave the source app. Both need custom native Android code.
 - **"Copied link" prompt:** when the app opens and a link was just copied (e.g. via Instagram's **Copy link**),
   offer "Save the link you just copied?" in one tap.
 - _Done when:_ most saves show a proper title and image. Failures show a placeholder card and can be retried.
@@ -468,6 +470,7 @@ our function, and the cheapest model that gives good results for each task.
 | 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
 | 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
 | 2026-10-03 | M1 confirmed on device: hosted Supabase project set up via the SQL editor, app run from Windows in Expo Go, and a title edited in Supabase showed up in the app. |
+| 2026-10-07 | M1b step 3 uses a **development build** (`expo-dev-client`, built in the cloud with EAS, installed as an APK) instead of Expo Go, plus `expo-share-intent` 8.0.1 for the Share menu. Android app ID `com.sandhinighode.inspirationlibrary` (can change before a Play Store release). The pinned share-sheet shortcut and background saving need custom native code, so they move to M2. Tap-to-open stays in M2 as planned. |
 | 2026-10-05 | **Roadmap:** MVP (through M6) within 6 weeks at about 6–7 hours a week. New step **D1 · Design system and key screens** using **Claude Design** before M2, so screens are built once to an approved design; short design reviews at the start of M3, M4 and M5. |
 | 2026-10-04 | **Importing existing saves** becomes milestone M3b (after Organize, so lists map to collections): YouTube and Pinterest via official connections; Instagram and bookmarks via export files. **No automatic sync of Instagram's own Saves**: there's no official way, and unofficial methods (password login, scraping, accessibility) risk user bans and app removal. Instead: a fast Share-menu save (Step 3), a "copied link" prompt (M2), monthly catch-up re-imports, and research into Meta's scheduled transfers. Optional desktop browser extension for continuous bookmark sync. |
 | 2026-10-04 | `ingest-url` is deployed with the platform JWT check off (`verify_jwt = false` in `supabase/config.toml`): the function verifies the login itself via `auth.getUser()` and returns 401 otherwise. The platform check can wrongly reject the newer asymmetric login tokens. Deployed with `--use-api`, so no Docker is needed on Windows. |

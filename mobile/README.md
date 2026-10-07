@@ -13,8 +13,11 @@ git pull
 npx expo start
 ```
 
-Then scan the QR code with **Expo Go** on your phone (same Wi-Fi as the laptop). Keep the Command
-Prompt window open while you use the app. `git pull` downloads the latest changes from GitHub.
+Then open the **Inspiration Library** app on your phone (your own development build from setup step 6,
+not Expo Go). It connects to the laptop by itself; if it asks, tap the server shown or scan the QR code. Keep the
+Command Prompt window open while you use the app. `git pull` downloads the latest changes from GitHub.
+
+Before setup step 6 is done, you can still scan the QR code with **Expo Go** (everything except the Share menu works).
 
 ---
 
@@ -111,6 +114,34 @@ Then start the app with `npx expo start`, and scan the QR code with **Expo Go** 
    Saving the same link again says "Already in your library".
 5. Close and reopen the app: you should still be signed in.
 
+### 6. Your own app with the Share menu (development build)
+
+Expo Go can't appear in your phone's Share menu, so you build **your own version** of the app in Expo's cloud
+(free) and install it. It works like Expo Go: it loads the app's code from your laptop.
+
+1. **Expo account:** at **expo.dev**, click **Sign up** (free).
+2. **Expo project:** at **expo.dev**, go to **Projects** → **Create a project**, named exactly `inspiration-library`.
+   Send the **Project ID** and your **Expo username** to Claude, who adds them to `app.json`. Then run `git pull`.
+3. **Build it** (Command Prompt, in the `mobile` folder):
+   ```
+   npx eas-cli@latest login
+   npx eas-cli@latest build --profile development --platform android
+   ```
+   Log in with your Expo username and password. If asked **"Generate a new Android Keystore?"**, answer **Yes**:
+   it's the app's digital signature, and Expo stores it for you. The build runs in the cloud for about
+   15–25 minutes; you can close nothing, just wait. At the end it shows a **link and QR code**.
+4. **Install it** (phone): open that link (or scan the QR with the camera) → **Download** → open the file →
+   **Install**. Android will ask to allow installing apps from your browser: allow it. If Play Protect warns about an
+   unknown developer, choose **Install anyway**. That's you!
+5. **Use it:** run `npx expo start --clear` on the laptop and open **Inspiration Library** on the phone.
+
+You only rebuild when the app gets a new **native** building block; Claude will tell you when. Normal code
+changes just need `git pull`.
+
+**Share something:** in Instagram, YouTube, Pinterest or Chrome, tap **Share** → **Inspiration Library**
+(you may need to tap **More** the first time). The app opens, shows **Saved ✓**, and the item is at the top. Press
+**Back** to return to where you were.
+
 ## Troubleshooting
 
 | What you see | Fix |
@@ -125,6 +156,9 @@ Then start the app with `npx expo start`, and scan the QR code with **Expo Go** 
 | `git pull` says "local changes … would be overwritten" for `package-lock.json` | Run `git restore package-lock.json`, then `git pull` again. |
 | Saving a link says "Function not found" or "Requested function was not found" | The link reader isn't uploaded yet (setup step 3). |
 | A saved link shows "…didn't share details…" or "couldn't reach…" | The site blocked the link reader or needs a login (common for Instagram). The link is still saved. |
+| Inspiration Library isn't in the Share menu | You're using Expo Go instead of your own app (setup step 6), or the Share list needs **More**. Reinstall the build if needed. |
+| The app opens from Share but says it can't connect / "Unable to load script" | The laptop server isn't running, or it's on a different Wi-Fi. Run `npx expo start --clear`, then share again. |
+| Shared from an app but it says "didn't include a link" | That app shared plain text without a link. Use its **Copy link** option and the **Paste a link** box instead. |
 | Expo Go can't connect or keeps loading | Phone and laptop on different networks, or a firewall. Try `npx expo start --tunnel`. |
 
 ## Developer checks

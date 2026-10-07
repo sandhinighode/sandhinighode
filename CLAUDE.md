@@ -42,7 +42,9 @@ tests/sql/run.sh                                              # database rules (
 
 - Keep secrets out of the code. Only the Supabase **publishable/anon** key may be in the app, via `mobile/.env`.
 - Every database change is a new migration file, and row-level security stays on.
-- The user develops on **Windows** with an **Android phone** (Expo Go). Write instructions for that setup.
+- The user develops on **Windows** with an **Android phone**, using their own **development build** of the app
+  (EAS, `expo-dev-client`; Expo Go can't do the Share menu). Write instructions for that setup. Adding a native
+  building block means a new cloud build: say so explicitly.
 - When asking the user to create anything in any tool (a query in the Supabase SQL Editor, a file in Notepad,
   a project, a key, a template…), always say **which software**, **exactly where** in it (menu path), and
   **what to name it**. Suggested names for Supabase SQL queries: `<milestone> – <what it does>`,
