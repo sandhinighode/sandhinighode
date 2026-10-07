@@ -278,7 +278,12 @@ when the current one works.
   signed out, it saves right after sign-in. Share → app opens → Back returns you to the source app.
 - _Done when:_ you share from Instagram, YouTube, Pinterest and Chrome, and each item appears in the list.
 
-**D1 · Design system and key screens (Claude Design)** _(week 1–2, before M2)_
+**D1 · Design system and key screens (Claude Design)** _(week 1–2, before M2)_ 🟡 _Round 1 (three mood directions) on the design canvas "Jugnu – D1 Design" on claude.ai, 2026-10-07_
+- **Brief (from the user):** cosy, inspirational, energetic and refreshing; bright and earthy colours; "like learning
+  something new from scratch". Colour inspiration: collected vintage interiors (claret, fig, moss, mustard, turquoise,
+  cornflower, petal, brass on warm cream). Feeling reference: Headway. Light mode only for now.
+- **Library cards:** Pinterest-style grid; the image or video up front; a warm, encouraging title with the original
+  title in small text; a small source icon; tags; and a difficulty badge (Easy · Weekend project · Big project).
 - Design the app's look in **Claude Design**: colours, fonts, spacing, card style, buttons and tone, plus the key
   screens: sign-in, library card grid, item detail, the "Saved ✓" confirmation after sharing, and empty states.
 - Claude starts the design; the user reviews and refines it (the user leads design decisions). Once approved,
@@ -290,6 +295,7 @@ when the current one works.
 - `enrich-item` function: page metadata, YouTube and Pinterest oEmbed, source and content-type
   detection, stored thumbnails, duplicate detection.
 - Card grid UI, item detail screen and "Open original", built to the approved D1 design.
+- **Tidied titles (no AI):** remove clutter such as "| YouTube", hashtags and emoji from long original titles.
 - **Faster sharing (moved from M1b step 3):** our app as a **pinned shortcut** at the top of the share sheet, and
   saving **in the background** with a toast so you never leave the source app. Both need custom native Android code.
 - **"Copied link" prompt:** when the app opens and a link was just copied (e.g. via Instagram's **Copy link**),
@@ -299,6 +305,7 @@ when the current one works.
 **M3 · Organize**
 - Collections (create, rename, reorder, add or remove items), tags, notes, archive, delete.
 - Automatic tags from hashtags. Automatic grouping and filtering by source.
+- **Difficulty** (Easy · Weekend project · Big project), picked by you when saving or later.
 - Quick-save screen: choose a collection or add a note while sharing.
 - Starts with a design review of the collections and quick-save screens (Claude Design).
 - _Done when:_ you can keep your real saves tidy without friction.
@@ -377,6 +384,8 @@ the Pinterest import move after the MVP first, then M6 polish. The roadmap is up
 
 **M7 · AI organization (cloud AI)**: consent screen, `ai-enrich` function, summaries,
 suggested tags and collections (shown as suggestions you can accept), cost caps.
+Also: **warm, encouraging titles** written from what the post is about (the original stays visible), tags grouped by
+what saves have in common, and a suggested **difficulty**.
 
 **M8 · Search by meaning, and chat**: embeddings, "find similar", natural-language search,
 then chat over your library with every answer linking to the items it used.
@@ -470,6 +479,7 @@ our function, and the cheapest model that gives good results for each task.
 | 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
 | 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
 | 2026-10-03 | M1 confirmed on device: hosted Supabase project set up via the SQL editor, app run from Windows in Expo Go, and a title edited in Supabase showed up in the app. |
+| 2026-10-07 | **D1 started.** Working name **Jugnu** ("a firefly for your ideas"). Design brief: cosy, inspirational, energetic, refreshing; bright and earthy colours; Headway as a feeling reference; light mode only for now. Card design includes warm titles, tags and a difficulty badge from the start; they are filled in step by step: tidied titles in M2, manual difficulty in M3, AI-written titles, grouping and suggested difficulty in M7. Designs are made on a claude.ai design canvas ("Jugnu – D1 Design"). |
 | 2026-10-07 | **M1b done**, confirmed on the user's phone: the development build (Expo project `inspiration-app`, owner `sandhinis-team`) installs from the EAS link, and links shared from other apps are saved and appear in the library. The Expo project name must match `slug` in `app.json`. No emulator is used: answer **No** when EAS offers to install on one. |
 | 2026-10-07 | M1b step 3 uses a **development build** (`expo-dev-client`, built in the cloud with EAS, installed as an APK) instead of Expo Go, plus `expo-share-intent` 8.0.1 for the Share menu. Android app ID `com.sandhinighode.inspirationlibrary` (can change before a Play Store release). The pinned share-sheet shortcut and background saving need custom native code, so they move to M2. Tap-to-open stays in M2 as planned. |
 | 2026-10-05 | **Roadmap:** MVP (through M6) within 6 weeks at about 6–7 hours a week. New step **D1 · Design system and key screens** using **Claude Design** before M2, so screens are built once to an approved design; short design reviews at the start of M3, M4 and M5. |
@@ -484,7 +494,9 @@ our function, and the cheapest model that gives good results for each task.
 
 ## 12. Open questions (decide at the relevant milestone)
 
-- **M1b:** Product name and app icon (needed for the Share-menu label). The placeholder name is "Inspiration Library".
+- **Name:** working name **Jugnu** (Hindi/Urdu for firefly), tagline "a firefly for your ideas". Still to do: check the
+  Play Store and the web for clashes, and ask a native speaker. Then the app icon, and rename the app (`app.json` name)
+  before testers (M5). Other candidates considered: Kindling, Curio, Tinka, Jugni.
 - **M5:** Which testers, and on which devices?
 - **M7:** Final AI provider and model choice, tested on your real saved items.
 - **M10:** Re-check Google's current options for third-party apps in Gemini.
