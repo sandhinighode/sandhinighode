@@ -288,9 +288,27 @@ when the current one works.
   the canvas as explored ideas only.
 - **Tabs: Library · Explore · Profile.** Search lives at the top of the Library. Collections become filters in the
   Library (M3), and "From your library" resurfacing becomes a small strip at the top of the Library (after the MVP).
-- **Explore** (boards G and H): see M6.
-- **Next (Round 3):** the other key screens in the B style: sign-in, item detail with "Open original", the "Saved ✓"
-  moment after sharing, empty and error states. D1 is ✅ once the user approves them.
+- **Explore** (boards I, G and H): see M6. Flow: Explore tab → **I · the jar** → tap the jar → **G · inside your jar**
+  (Exploring now / Glowed) → back to the jar; **H · your month** opens from the jar's "This month".
+- **Key screens** (boards J–M): **J** item detail (big arched image, warm and original title, tags, difficulty, note,
+  **Add to jar**, **Open original**); **K** the "A new spark, saved" sheet after sharing (Add to jar too / Back to the
+  app); **L** sign-in (email, then 6-digit code); **M** empty library, empty jar, a link that couldn't be read, offline.
+- **Design system (build every screen to this):**
+  | Token | Value |
+  |---|---|
+  | Page background (linen) | `#F6F0E3` |
+  | Card / sheet (parchment) | `#FBF5EA`, 1px brass outline `#C9A46A`, shadow `0 2px 8px rgba(62,31,27,0.08)` |
+  | Text (fig) / secondary text | `#3E1F1B` / `#6D5243` |
+  | Accent (claret) | `#7A2E2A`: links, active tab, highlighted words |
+  | Glow (mustard) | `#E8B83F` / `#F2C14E`: fireflies, done ✓, difficulty dots |
+  | Night (jar, dark panels) | `#2E1714` / `#3E1F1B` |
+  | Soft fill (inputs, chips) | `#EDE2CF` |
+  | Tag colours | Interiors `#7A2E2A`, Colour `#E8B83F`, Painting `#3E6BA8`, Travel `#1F7A74`, Garden `#5E6B2E`, Textiles `#8E4F55`, Architecture `#6B4226`, DIY `#C2BB55` |
+  | Fonts | **Gloock** for headings and card titles, **Instrument Sans** for everything else |
+  | Shapes | Library cards: round arch (radius = half the card width) with 6px inner padding and an arched image; rows: 16px corners; buttons and inputs: fully rounded (pill) |
+  | Difficulty | three dots: ●○○ Easy · ●●○ Weekend project · ●●● Big project |
+  | Motion | fireflies hover slowly; glowed ones pulse softly; nothing flashes |
+- **Next:** the user reviews boards J–M. D1 is ✅ once they're approved.
 - **Brief (from the user):** cosy, inspirational, energetic and refreshing; bright and earthy colours; "like learning
   something new from scratch". Colour inspiration: collected vintage interiors (claret, fig, moss, mustard, turquoise,
   cornflower, petal, brass on warm cream). Feeling reference: Headway. Light mode only for now.
@@ -363,13 +381,14 @@ when the current one works.
 - _Done when:_ a tester on iPhone and a tester on Android can each save and browse.
 
 **M6 · Explore: soft intentions and "Your month"** _(replaces rule-based resurfacing in the MVP, decided 2026-10-09)_
-- On any card, **Explore** adds it to your Explore list for **today, this week or this month**. These are soft intentions,
-  not targets: no deadlines, no warnings, no guilt.
-- **Explore tab:** your picks grouped by Today · This week · This month. Tap ✓ to mark one as **glowed** (done), with an
-  optional note or photo.
+- On any card or the detail screen, **Add to jar** (the compass button). No dates and no tracking: a spark stays in the
+  jar until you mark it as glowed. Soft intentions, not targets: no deadlines, no warnings, no guilt.
+- **Explore tab = the jar:** big bright fireflies (the post's image) are sparks you're exploring now; smaller softly
+  pulsing ones have glowed; tiny dots are sparks still waiting in your library. Tap the jar for the list
+  (Exploring now / Glowed); tap ✓ to mark one as **glowed**, with an optional note or photo.
 - **Your month:** a warm recap: "Your jar glowed 6 times this month", a jar of fireflies, glows per week and a gallery
   of what glowed. Unfinished picks quietly roll over to the next month.
-- New table `explore_items` (`user_id`, `save_id`, `horizon` today/week/month, `added_at`, `glowed_at`, `note`), with
+- New table `explore_items` (`user_id`, `save_id`, `added_at`, `glowed_at`, `note`), with
   row-level security like `saves`.
 - _Done when:_ you add sparks to Explore, mark some as glowed, and see them in "Your month" on your phone.
 
@@ -499,6 +518,7 @@ our function, and the cheapest model that gives good results for each task.
 | 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
 | 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
 | 2026-10-03 | M1 confirmed on device: hosted Supabase project set up via the SQL editor, app run from Windows in Expo Go, and a title edited in Supabase showed up in the app. |
+| 2026-10-09 | **Explore uses the jar metaphor only** ("cabinet" dropped; Library heading "Little sparks, waiting to glow"). Adding to the jar has **no dates or time tracking**: the jar shows sparks being explored now (big, bright) and ones that glowed (small, soft). Key screens J–M drawn and the design system recorded in D1. |
 | 2026-10-09 | **Explore replaces rule-based resurfacing in the MVP (M6).** Soft intentions (today, this week, this month), marking sparks as "glowed", and a monthly recap ("Your jar glowed 6 times this month"). Resurfacing moves to M9 as a strip in the Library. Tabs become **Library · Explore · Profile** (search at the top of the Library, with voice search in M4; collections become Library filters). Board B refined: no dark header, search box with mic, light card shadow. |
 | 2026-10-07 | **D1 library direction chosen: "B · The collected room"**, as originally drawn. Later explorations (search box at the top, jharoka-shaped cards, difficulty decks) were tried on the canvas and set aside for now. |
 | 2026-10-07 | **D1 started.** Working name **Jugnu** ("a firefly for your ideas"). Design brief: cosy, inspirational, energetic, refreshing; bright and earthy colours; Headway as a feeling reference; light mode only for now. Card design includes warm titles, tags and a difficulty badge from the start; they are filled in step by step: tidied titles in M2, manual difficulty in M3, AI-written titles, grouping and suggested difficulty in M7. Designs are made on a claude.ai design canvas ("Jugnu – D1 Design"). |
