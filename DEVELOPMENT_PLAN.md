@@ -280,10 +280,15 @@ when the current one works.
 
 **D1 · Design system and key screens (Claude Design)** _(week 1–2, before M2)_ 🟡 _in progress_
 - **Design canvas:** "Jugnu – D1 Design" on claude.ai: https://claude.ai/artifact/4tpLWbpNKpqMbn31LxjtyS
-- **Chosen library direction (2026-10-07): board "B · The collected room", as-is.** Deep fig header with mustard
-  highlights and a "Paste a link" box; arched cards with thin brass outlines on parchment; jewel-coloured tags; difficulty
-  as three dots; small source icons; dark rounded bottom tab bar. Fonts: Gloock (headings) and Instrument Sans (text).
-  Boards A, C, D, E and F (incl. jharoka shapes and "difficulty decks") stay on the canvas as explored ideas only.
+- **Chosen library direction: board "B · The collected room"** (chosen 2026-10-07, refined 2026-10-09). Light linen
+  page with no dark header; "Your cabinet of little sparks" heading; a **search box with a mic** (voice search) and a
+  mustard **+** button to save a link; arched cards with thin brass outlines and a very light shadow on parchment;
+  jewel-coloured tags; difficulty as three dots; small source icons; an **Explore** button on each card. Fonts: Gloock
+  (headings) and Instrument Sans (text). Boards A, C, D, E and F (incl. jharoka shapes and "difficulty decks") stay on
+  the canvas as explored ideas only.
+- **Tabs: Library · Explore · Profile.** Search lives at the top of the Library. Collections become filters in the
+  Library (M3), and "From your library" resurfacing becomes a small strip at the top of the Library (after the MVP).
+- **Explore** (boards G and H): see M6.
 - **Next (Round 3):** the other key screens in the B style: sign-in, item detail with "Open original", the "Saved ✓"
   moment after sharing, empty and error states. D1 is ✅ once the user approves them.
 - **Brief (from the user):** cosy, inspirational, energetic and refreshing; bright and earthy colours; "like learning
@@ -344,6 +349,8 @@ when the current one works.
 **M4 · Search**
 - Keyword search over titles, descriptions, notes, shared text and tags.
 - Filters: source, content type, collection, tag, date.
+- **Voice search** via the mic in the search box, using the phone's own speech-to-text (free, private). Needs a new
+  native building block, so a new cloud build.
 - Starts with a design review of the search screen (Claude Design).
 - _Done when:_ you can find things you remember a word from.
 
@@ -355,11 +362,16 @@ when the current one works.
 - Design review of onboarding, including the optional "Bring your saves" import cards (Claude Design).
 - _Done when:_ a tester on iPhone and a tester on Android can each save and browse.
 
-**M6 · Rule-based resurfacing**
-- Daily push notification ("From your library") chosen by rules: on this day, not opened in 30+
-  days, random pick from a favorite collection.
-- A "Rediscover" section in the app. Open, dismiss and snooze are recorded in `resurface_events`.
-- _Done when:_ you rediscover forgotten saves at least a few times a week.
+**M6 · Explore: soft intentions and "Your month"** _(replaces rule-based resurfacing in the MVP, decided 2026-10-09)_
+- On any card, **Explore** adds it to your Explore list for **today, this week or this month**. These are soft intentions,
+  not targets: no deadlines, no warnings, no guilt.
+- **Explore tab:** your picks grouped by Today · This week · This month. Tap ✓ to mark one as **glowed** (done), with an
+  optional note or photo.
+- **Your month:** a warm recap: "Your jar glowed 6 times this month", a jar of fireflies, glows per week and a gallery
+  of what glowed. Unfinished picks quietly roll over to the next month.
+- New table `explore_items` (`user_id`, `save_id`, `horizon` today/week/month, `added_at`, `glowed_at`, `note`), with
+  row-level security like `saves`.
+- _Done when:_ you add sparks to Explore, mark some as glowed, and see them in "Your month" on your phone.
 
 **🎯 MVP complete.** Use it for a few weeks and review which organizing and finding problems remain
 before adding AI.
@@ -376,7 +388,7 @@ The target is the **MVP (through M6) within 6 weeks** of 2026-10-05: about 35–
 | 3 | **M3 Organize** | Collections, tags, notes, archive/delete, auto-tags, choose a collection while sharing |
 | 4 | **M3b Imports** | Connect YouTube, Instagram file import, bookmarks file import |
 | 5 | **M4 Search**, start **M5** | Keyword search and filters. Apple account, app on the iPad. |
-| 6 | Finish **M5**, **M6** | Account deletion, privacy policy, app domain email, testers invited, daily "From your library" nudge → **🎯 MVP** |
+| 6 | Finish **M5**, **M6** | Account deletion, privacy policy, app domain email, testers invited, **Explore** and "Your month" → **🎯 MVP** |
 
 **Start early (these involve waiting):**
 - Week 1: choose the **app name** and buy the **domain** (needed for email and the iPad launch).
@@ -397,8 +409,9 @@ what saves have in common, and a suggested **difficulty**.
 **M8 · Search by meaning, and chat**: embeddings, "find similar", natural-language search,
 then chat over your library with every answer linking to the items it used.
 
-**M9 · Smart resurfacing**: relevance based on recent saves and your reactions in
-`resurface_events`.
+**M9 · Resurfacing**: first rule-based ("From your library" strip in the Library and an optional daily notification:
+on this day, not opened in 30+ days), then smarter relevance based on recent saves and your reactions in
+`resurface_events`. (Moved out of the MVP on 2026-10-09 to make room for Explore.)
 
 **M10 · Voice**: Siri App Intents first (save, open a collection, search), then Android and
 Gemini, as far as Google's tools allow.
@@ -486,6 +499,7 @@ our function, and the cheapest model that gives good results for each task.
 | 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
 | 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
 | 2026-10-03 | M1 confirmed on device: hosted Supabase project set up via the SQL editor, app run from Windows in Expo Go, and a title edited in Supabase showed up in the app. |
+| 2026-10-09 | **Explore replaces rule-based resurfacing in the MVP (M6).** Soft intentions (today, this week, this month), marking sparks as "glowed", and a monthly recap ("Your jar glowed 6 times this month"). Resurfacing moves to M9 as a strip in the Library. Tabs become **Library · Explore · Profile** (search at the top of the Library, with voice search in M4; collections become Library filters). Board B refined: no dark header, search box with mic, light card shadow. |
 | 2026-10-07 | **D1 library direction chosen: "B · The collected room"**, as originally drawn. Later explorations (search box at the top, jharoka-shaped cards, difficulty decks) were tried on the canvas and set aside for now. |
 | 2026-10-07 | **D1 started.** Working name **Jugnu** ("a firefly for your ideas"). Design brief: cosy, inspirational, energetic, refreshing; bright and earthy colours; Headway as a feeling reference; light mode only for now. Card design includes warm titles, tags and a difficulty badge from the start; they are filled in step by step: tidied titles in M2, manual difficulty in M3, AI-written titles, grouping and suggested difficulty in M7. Designs are made on a claude.ai design canvas ("Jugnu – D1 Design"). |
 | 2026-10-07 | **M1b done**, confirmed on the user's phone: the development build (Expo project `inspiration-app`, owner `sandhinis-team`) installs from the EAS link, and links shared from other apps are saved and appear in the library. The Expo project name must match `slug` in `app.json`. No emulator is used: answer **No** when EAS offers to install on one. |
