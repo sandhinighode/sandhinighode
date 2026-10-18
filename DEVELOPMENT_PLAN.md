@@ -308,7 +308,7 @@ when the current one works.
   | Shapes | Library cards: round arch (radius = half the card width) with 6px inner padding and an arched image; rows: 16px corners; buttons and inputs: fully rounded (pill) |
   | Difficulty | three dots: ●○○ Easy · ●●○ Weekend project · ●●● Big project |
   | Motion | fireflies hover slowly; glowed ones pulse softly; nothing flashes |
-- **Next:** the user reviews boards J–M. D1 is ✅ once they're approved.
+- **Next:** the user reviews boards J–M. D1 is ✅ once they're approved. **Then M7-lite (AI proof of concept), before M2.**
 - **Brief (from the user):** cosy, inspirational, energetic and refreshing; bright and earthy colours; "like learning
   something new from scratch". Colour inspiration: collected vintage interiors (claret, fig, moss, mustard, turquoise,
   cornflower, petal, brass on warm cream). Feeling reference: Headway. Light mode only for now.
@@ -420,6 +420,12 @@ the Pinterest import move after the MVP first, then M6 polish. The roadmap is up
 
 ### After the MVP (AI and beyond)
 
+**M7-lite · AI proof of concept (moved up: next after D1, decided 2026-10-18).** A focused first slice of M7 on the
+user's real saves: AI-written warm title, short summary, topic tags and difficulty, shown as suggestions to accept or
+edit (original title always visible); AI consent screen; API key server-side only; per-user cost cap; one swappable
+AI-provider layer. Needs an Anthropic API account and key (pay per use, a few dollars). The rest of M7 and M8 stay after
+the MVP. _Done when:_ the user sees AI suggestions on their own saves on the phone and can accept or edit them.
+
 **M7 · AI organization (cloud AI)**: consent screen, `ai-enrich` function, summaries,
 suggested tags and collections (shown as suggestions you can accept), cost caps.
 Also: **warm, encouraging titles** written from what the post is about (the original stays visible), tags grouped by
@@ -518,6 +524,7 @@ our function, and the cheapest model that gives good results for each task.
 | 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
 | 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
 | 2026-10-03 | M1 confirmed on device: hosted Supabase project set up via the SQL editor, app run from Windows in Expo Go, and a title edited in Supabase showed up in the app. |
+| 2026-10-18 | **M7-lite (AI proof of concept) moved before M2**, straight after D1, so the AI features exist and can be demoed (the user is applying for a GenAI strategist role). Scope kept small: suggestions on real saves, consent, server-side key, cost cap, swappable provider. The 6-week MVP roadmap shifts by about one week. |
 | 2026-10-09 | **Explore uses the jar metaphor only** ("cabinet" dropped; Library heading "Little sparks, waiting to glow"). Adding to the jar has **no dates or time tracking**: the jar shows sparks being explored now (big, bright) and ones that glowed (small, soft). Key screens J–M drawn and the design system recorded in D1. |
 | 2026-10-09 | **Explore replaces rule-based resurfacing in the MVP (M6).** Soft intentions (today, this week, this month), marking sparks as "glowed", and a monthly recap ("Your jar glowed 6 times this month"). Resurfacing moves to M9 as a strip in the Library. Tabs become **Library · Explore · Profile** (search at the top of the Library, with voice search in M4; collections become Library filters). Board B refined: no dark header, search box with mic, light card shadow. |
 | 2026-10-07 | **D1 library direction chosen: "B · The collected room"**, as originally drawn. Later explorations (search box at the top, jharoka-shaped cards, difficulty decks) were tried on the canvas and set aside for now. |
