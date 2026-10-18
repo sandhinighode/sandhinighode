@@ -308,7 +308,8 @@ when the current one works.
   | Shapes | Library cards: round arch (radius = half the card width) with 6px inner padding and an arched image; rows: 16px corners; buttons and inputs: fully rounded (pill) |
   | Difficulty | three dots: ●○○ Easy · ●●○ Weekend project · ●●● Big project |
   | Motion | fireflies hover slowly; glowed ones pulse softly; nothing flashes |
-- **Next:** the user reviews boards J–M. D1 is ✅ once they're approved. **Then M7-lite (AI proof of concept), before M2.**
+- **Next:** the user reviews boards J–M. D1 is ✅ once they're approved. **Then the "next two weeks" plan below:
+  Explore (M6), then M7-lite and M8-lite.**
 - **Brief (from the user):** cosy, inspirational, energetic and refreshing; bright and earthy colours; "like learning
   something new from scratch". Colour inspiration: collected vintage interiors (claret, fig, moss, mustard, turquoise,
   cornflower, petal, brass on warm cream). Feeling reference: Headway. Light mode only for now.
@@ -395,7 +396,23 @@ when the current one works.
 **🎯 MVP complete.** Use it for a few weeks and review which organizing and finding problems remain
 before adding AI.
 
-### Roadmap to the MVP: 6 weeks at about 6–7 hours a week
+### Next two weeks (decided 2026-10-18): motivation and AI first
+
+The main features come first: **Explore** (motivating people to act on their saves), then **AI** (M7-lite) and
+**Ask your library** (M8-lite). Target: done by about 2026-11-01. This is ambitious at 6–7 hours a week; plan for
+8–10 hours in each of these two weeks. Anything not finished is simply carried over (and left out of any write-up).
+
+| Order | Milestone | What you'll have |
+|---|---|---|
+| 0 | Finish **D1** | Boards J–M approved; D1 ✅ |
+| 1 | **M6 · Explore** + the card grid and detail screen it needs (built to D1) | Library in the new design; tap a card for detail; **Add to jar**; the jar (exploring now / glowed); mark as glowed |
+| 2 | **M7-lite · AI enrichment** | AI warm title, summary, tags and difficulty on your real saves, with ✨ Keep / Edit; consent screen; cost cap |
+| 3 | **M8-lite · Ask your library (RAG)** | Ask a question; the answer cites 2–3 of your saves as cards |
+
+After that, the rest of the MVP continues in this order: the rest of **M2** (stored images, copied-link prompt),
+**M3**, **M3b**, **M4**, **M5**. The MVP lands about 2 weeks later than first planned.
+
+### Original roadmap to the MVP (6 weeks at about 6–7 hours a week; superseded by the plan above)
 
 The target is the **MVP (through M6) within 6 weeks** of 2026-10-05: about 35–40 hours of the user's time
 (testing on the phone, setup steps, design reviews and the occasional snag).
@@ -420,11 +437,19 @@ the Pinterest import move after the MVP first, then M6 polish. The roadmap is up
 
 ### After the MVP (AI and beyond)
 
-**M7-lite · AI proof of concept (moved up: next after D1, decided 2026-10-18).** A focused first slice of M7 on the
-user's real saves: AI-written warm title, short summary, topic tags and difficulty, shown as suggestions to accept or
-edit (original title always visible); AI consent screen; API key server-side only; per-user cost cap; one swappable
-AI-provider layer. Needs an Anthropic API account and key (pay per use, a few dollars). The rest of M7 and M8 stay after
-the MVP. _Done when:_ the user sees AI suggestions on their own saves on the phone and can accept or edit them.
+**M7-lite · AI enrichment (moved up: straight after Explore, decided 2026-10-18).** On the user's real saves: an
+`ai-enrich` server function sends each save's text to Claude through the API and gets back structured data: a warm
+title, a short summary, topic tags and a difficulty. Shown on the detail screen as **✨ Suggested** with **Keep / Edit**
+(original title always visible). AI consent screen; API key server-side only; per-user cost cap; one swappable
+AI-provider layer. **Small evaluation:** compare two prompt versions on ~20 real saves and keep the better one.
+Starts with a short design of the ✨ Suggested pattern. Needs an Anthropic API account and key (pay per use, a few
+dollars). _Done when:_ the user sees AI suggestions on their own saves on the phone and can keep or edit them.
+
+**M8-lite · Ask your library (moved up: after M7-lite, decided 2026-10-18).** Retrieval-augmented generation (RAG):
+embeddings of each save (using the M7 summaries) stored with Supabase pgvector; an **"Ask your library"** box (from the
+search bar); the answer is written only from the user's own saves and cites 2–3 of them as tappable cards. Same consent,
+key and cost rules as M7-lite. Starts with a short design of the ask-and-answer screen. _Done when:_ the user asks a
+question on the phone and gets an answer that links to the right saves.
 
 **M7 · AI organization (cloud AI)**: consent screen, `ai-enrich` function, summaries,
 suggested tags and collections (shown as suggestions you can accept), cost caps.
@@ -524,6 +549,7 @@ our function, and the cheapest model that gives good results for each task.
 | 2026-10-01 | M1 redefined as the minimal foundation (app ↔ database, one test record), replacing M0. Login and capture move to M1b. No login in M1, so sample rows (`user_id` null) are readable without login through a clearly marked temporary policy, to be removed in M1b. Development machine: Windows laptop + Android phone with Expo Go. |
 | 2026-10-01 | Hosted Supabase project (free tier) instead of running Supabase locally, so no Docker install is needed. Database changes are applied by pasting migration files into the Supabase SQL editor until we adopt the Supabase CLI. |
 | 2026-10-03 | M1 confirmed on device: hosted Supabase project set up via the SQL editor, app run from Windows in Expo Go, and a title edited in Supabase showed up in the app. |
+| 2026-10-18 | **Next two weeks: Explore (M6), then M7-lite (AI enrichment) and M8-lite (RAG "Ask your library")**, straight after D1 and before the rest of M2–M5. Motivation and AI are the main features. Ambitious at 6–7 h/week (plan 8–10 h). MVP moves about 2 weeks later. |
 | 2026-10-18 | **M7-lite (AI proof of concept) moved before M2**, straight after D1, so the AI features exist and can be demoed (the user is applying for a GenAI strategist role). Scope kept small: suggestions on real saves, consent, server-side key, cost cap, swappable provider. The 6-week MVP roadmap shifts by about one week. |
 | 2026-10-09 | **Explore uses the jar metaphor only** ("cabinet" dropped; Library heading "Little sparks, waiting to glow"). Adding to the jar has **no dates or time tracking**: the jar shows sparks being explored now (big, bright) and ones that glowed (small, soft). Key screens J–M drawn and the design system recorded in D1. |
 | 2026-10-09 | **Explore replaces rule-based resurfacing in the MVP (M6).** Soft intentions (today, this week, this month), marking sparks as "glowed", and a monthly recap ("Your jar glowed 6 times this month"). Resurfacing moves to M9 as a strip in the Library. Tabs become **Library · Explore · Profile** (search at the top of the Library, with voice search in M4; collections become Library filters). Board B refined: no dark header, search box with mic, light card shadow. |
